@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /ads_manager/{adId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null
+        && request.auth.uid == "CLBHE7rmmARH6V9XpCXnkZrHxju2";
+    }
+  }
+}

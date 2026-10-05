@@ -101,7 +101,10 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
     if (!shouldLoadAds || !preferences.adsenseClient || !navigator.onLine) return;
 
     const scriptSrc = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(preferences.adsenseClient)}`;
-    if (existingScript?.src === scriptSrc) return;
+    if (existingScript?.src === scriptSrc) {
+      existingScript.dataset.loaded = "true";
+      return;
+    }
     existingScript?.remove();
 
     const script = document.createElement("script");
@@ -109,7 +112,10 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
     script.async = true;
     script.crossOrigin = "anonymous";
     script.src = scriptSrc;
-    script.onload = () => setReadyPublisherId(preferences.adsenseClient);
+    script.onload = () => {
+      script.dataset.loaded = "true";
+      setReadyPublisherId(preferences.adsenseClient);
+    };
     script.onerror = () => {
       setReadyPublisherId("");
       console.error("Google AdSense script failed to load.");

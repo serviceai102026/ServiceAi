@@ -10,6 +10,7 @@ const navigation = [
   { href: "/admin", label: "نظرة عامة", icon: LayoutDashboard },
   { href: "/admin/articles", label: "المقالات", icon: FileText },
   { href: "/admin/categories", label: "التصنيفات", icon: Settings2 },
+  { href: "/admin/ads-manager", label: "إدارة الإعلانات", icon: Megaphone },
   { href: "/admin/settings", label: "إعدادات الموقع", icon: Megaphone },
   { href: "/admin/appearance", label: "هوية ومظهر الموقع", icon: Palette },
   { href: "/admin/slider", label: "سلايدر الصفحة", icon: Images },
