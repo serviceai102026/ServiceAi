@@ -3,7 +3,6 @@ import Image from "next/image";
 import type { ArticleCardData } from "@/lib/data";
 import { articleCardCategory, formatDate } from "@/lib/data";
 import { SiteBrand, SiteFooterBottom, SiteFooterContent } from "@/components/site-branding-display";
-import { AdManager } from "@/components/ad-manager";
 
 const navLinks = [
   { href: "/", label: "الرئيسية" },
@@ -35,7 +34,6 @@ export function SiteHeader({ active = "" }: { active?: string }) {
 export function SiteFooter() {
   return (
     <footer className="site-footer">
-      <AdManager id="footer-top" className="container footer-ad-top" />
       <div className="container footer-main">
         <SiteFooterContent />
       </div>

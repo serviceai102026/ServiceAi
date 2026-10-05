@@ -3,7 +3,6 @@ import Link from "next/link";
 import { SiteFooter, SiteHeader } from "@/components/site";
 import { sanitizeArticleHtml } from "@/lib/content";
 import { getPage } from "@/lib/pages";
-import { AdManager } from "@/components/ad-manager";
 
 export const dynamic = "force-dynamic";
 
@@ -111,7 +110,6 @@ export default async function ToolsPage() {
           </div>
         </div>
       </section>
-      <AdManager id="services-top" className="container services-ad-top" />
       <section className="section tools-page-section">
         <div className="container">
           <div className="legal-content" dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(page?.content ?? "") }} />
@@ -131,7 +129,6 @@ export default async function ToolsPage() {
           </div>
         </div>
       </section>
-      <AdManager id="services-bottom" className="container services-ad-bottom" />
       <section className="final-cta">
         <div className="container final-cta-inner">
           <div><span className="eyebrow eyebrow-light">كل خطوة تصنع فرقًا</span><h2>واصل رحلتك المهنية مع مقالاتنا.</h2><p>تصفّح نصائح عملية تدعم استعدادك لخطوتك القادمة.</p></div>

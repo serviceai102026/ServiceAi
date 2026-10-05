@@ -6,7 +6,6 @@ import { LocalArticlePage } from "@/components/local-blog";
 import blogs from "@/data/blogs.json";
 import { sanitizeArticleHtml } from "@/lib/content";
 import type { ArticleCardData } from "@/lib/data";
-import { AdManager } from "@/components/ad-manager";
 
 export const dynamic = "force-dynamic";
 
@@ -67,7 +66,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         </div>
         <p className="article-tags" aria-label="الكلمات المفتاحية">{post.tags.map((tag) => <span key={tag}>{tag}</span>)}</p>
         <div className="article-rich-content" dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(post.content) }} />
-        <AdManager id="blog-in-article" className="article-ad-slot" />
         <section className="related-articles">
           <div className="section-heading"><span className="eyebrow">تابع القراءة</span><h2>مقالات <span className="text-gradient">ذات صلة.</span></h2></div>
           <div className="blog-grid">{blogs.filter((item) => item.slug !== post.slug && item.category === post.category).slice(0, 3).map((item) => <ArticleCard article={toArticleCard(item)} key={item.id} />)}</div>
