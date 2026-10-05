@@ -1,12 +1,38 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { doc, onSnapshot } from "firebase/firestore";
 import { useSitePreferences } from "@/components/site-preferences-provider";
 import { SocialBrandIcon } from "@/components/social-brand-icon";
+import { getFirebaseFirestore } from "@/lib/firebase";
 import type { SocialPreferences } from "@/lib/site-preferences";
 
 export function FooterSocialLinks() {
   const { preferences } = useSitePreferences();
-  const { socialLinks } = preferences;
+  const [socialLinks, setSocialLinks] = useState(preferences.socialLinks);
+  useEffect(() => {
+    try {
+      return onSnapshot(doc(getFirebaseFirestore(), "site_public", "social_links"), (snapshot) => {
+        if (!snapshot.exists()) return;
+        const links = snapshot.data().links;
+        if (!links || typeof links !== "object") return;
+        setSocialLinks((current) => ({
+          ...current,
+          ...Object.fromEntries(
+            (Object.keys(current) as (keyof SocialPreferences)[]).map((key) => [
+              key,
+              typeof links[key] === "string" ? links[key] : "",
+            ]),
+          ),
+        }));
+      }, (error) => {
+        console.error("Could not load shared footer social links from Firestore:", error);
+      });
+    } catch (error) {
+      console.error("Could not connect to shared footer social links:", error);
+      return undefined;
+    }
+  }, []);
   const fallbackLinks = {
     instagram: "https://instagram.com",
     facebook: "https://facebook.com",

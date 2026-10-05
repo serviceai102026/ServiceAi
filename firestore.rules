@@ -7,5 +7,12 @@ service cloud.firestore {
       allow create, update, delete: if request.auth != null
         && request.auth.uid == "CLBHE7rmmARH6V9XpCXnkZrHxju2";
     }
+
+    match /site_public/{documentId} {
+      allow read: if documentId == "social_links";
+      allow create, update, delete: if documentId == "social_links"
+        && request.auth != null
+        && request.auth.uid == "CLBHE7rmmARH6V9XpCXnkZrHxju2";
+    }
   }
 }
