@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { FileText, Files, Images, KeyRound, LayoutDashboard, LogOut, Megaphone, Palette, Settings2, Share2, Sparkles, Wrench } from "lucide-react";
+import { FileText, Files, Images, KeyRound, LayoutDashboard, LogOut, Megaphone, Palette, Settings2, Sparkles, Wrench } from "lucide-react";
 import { logoutLocalAdmin } from "@/lib/local-admin-auth";
 
 const navigation = [
@@ -14,7 +14,6 @@ const navigation = [
   { href: "/admin/settings", label: "إعدادات الموقع", icon: Megaphone },
   { href: "/admin/appearance", label: "هوية ومظهر الموقع", icon: Palette },
   { href: "/admin/slider", label: "سلايدر الصفحة", icon: Images },
-  { href: "/admin/social", label: "روابط التواصل", icon: Share2 },
   { href: "/admin/credentials", label: "تغيير معلومات الدخول", icon: KeyRound },
   { href: "/admin/pages", label: "إدارة الصفحات", icon: Files },
   { href: "/admin/tools", label: "إدارة الأدوات", icon: Wrench },

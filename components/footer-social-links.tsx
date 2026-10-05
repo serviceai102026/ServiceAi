@@ -1,91 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { useSitePreferences } from "@/components/site-preferences-provider";
 import { SocialBrandIcon } from "@/components/social-brand-icon";
-import { getFirebaseFirestore } from "@/lib/firebase";
 import type { SocialPreferences } from "@/lib/site-preferences";
 
-export function FooterSocialLinks() {
-  const { preferences } = useSitePreferences();
-  const [socialLinks, setSocialLinks] = useState(preferences.socialLinks);
-  useEffect(() => {
-    try {
-      return onSnapshot(doc(getFirebaseFirestore(), "site_public", "social_links"), (snapshot) => {
-        if (!snapshot.exists()) return;
-        const links = snapshot.data().links;
-        if (!links || typeof links !== "object") return;
-        setSocialLinks((current) => ({
-          ...current,
-          ...Object.fromEntries(
-            (Object.keys(current) as (keyof SocialPreferences)[]).map((key) => [
-              key,
-              typeof links[key] === "string" ? links[key] : "",
-            ]),
-          ),
-        }));
-      }, (error) => {
-        console.error("Could not load shared footer social links from Firestore:", error);
-      });
-    } catch (error) {
-      console.error("Could not connect to shared footer social links:", error);
-      return undefined;
-    }
-  }, []);
-  const fallbackLinks = {
-    instagram: "https://instagram.com",
-    facebook: "https://facebook.com",
-    x: "https://x.com",
-    linkedin: "https://linkedin.com",
-    whatsapp: "/",
-    youtube: "/",
-  } satisfies Record<keyof SocialPreferences, string>;
-  const socialHref = (value: string, fallback: string) => {
-    const href = value.trim();
-    if (!href || href === "#") return fallback;
-    try {
-      const url = new URL(href);
-      return url.protocol === "https:" || url.protocol === "http:" ? url.href : fallback;
-    } catch {
-      return fallback;
-    }
-  };
-  const links = [
-    {
-      label: "WhatsApp",
-      href: socialLinks.whatsapp.replace(/\D/g, "")
-        ? `https://wa.me/${socialLinks.whatsapp.replace(/\D/g, "")}`
-        : fallbackLinks.whatsapp,
-      isConfigured: Boolean(socialLinks.whatsapp.replace(/\D/g, "")),
-      platform: "whatsapp",
-    },
-    { label: "Instagram", href: socialHref(socialLinks.instagram, fallbackLinks.instagram), isConfigured: /^https:\/\//i.test(socialLinks.instagram), platform: "instagram" },
-    { label: "Facebook", href: socialHref(socialLinks.facebook, fallbackLinks.facebook), isConfigured: /^https:\/\//i.test(socialLinks.facebook), platform: "facebook" },
-    { label: "X", href: socialHref(socialLinks.x, fallbackLinks.x), isConfigured: /^https:\/\//i.test(socialLinks.x), platform: "x" },
-    { label: "LinkedIn", href: socialHref(socialLinks.linkedin, fallbackLinks.linkedin), isConfigured: /^https:\/\//i.test(socialLinks.linkedin), platform: "linkedin" },
-    { label: "YouTube", href: socialHref(socialLinks.youtube, fallbackLinks.youtube), isConfigured: /^https:\/\//i.test(socialLinks.youtube), platform: "youtube" },
-  ] satisfies { label: string; href: string; isConfigured: boolean; platform: keyof SocialPreferences }[];
+const socialLinks = [
+  { name: "facebook", href: "https://www.facebook.com/serviceai.ma", icon: "facebook" },
+  { name: "instagram", href: "https://www.instagram.com/serviceai.ma", icon: "instagram" },
+  { name: "linkedin", href: "https://www.linkedin.com/company/serviceai", icon: "linkedin" },
+  { name: "whatsapp", href: "https://wa.me/212600000000", icon: "whatsapp" },
+] satisfies { name: string; href: string; icon: keyof SocialPreferences }[];
 
+export function FooterSocialLinks() {
   return (
     <nav className="footer-social-links" aria-label="حسابات ServiceAI على مواقع التواصل">
-      {links.map((item) => {
-        const content = <SocialBrandIcon platform={item.platform} size={17} />;
-
-        return (
-          <a
-            className={item.isConfigured ? undefined : "footer-social-link-unconfigured"}
-            href={item.href}
-            key={item.label}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={item.label}
-            title={item.label}
-          >
-            {content}
-          </a>
-        );
-      })}
+      {socialLinks.map((link) => (
+        <a
+          href={link.href}
+          key={link.name}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition cursor-pointer"
+          aria-label={link.name}
+          title={link.name}
+        >
+          <SocialBrandIcon platform={link.icon} size={17} />
+        </a>
+      ))}
     </nav>
   );
 }

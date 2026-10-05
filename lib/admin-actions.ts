@@ -11,7 +11,6 @@ import {
   type HomeSliderSlide,
   type SiteBranding,
   type SitePreferences,
-  type SocialPreferences,
 } from "@/lib/site-preferences";
 
 export type ActionState = { error?: string; success?: string };
@@ -201,36 +200,6 @@ function isSecureSocialUrl(value: string): boolean {
     return url.protocol === "https:" && Boolean(url.hostname) && !url.username && !url.password;
   } catch {
     return false;
-  }
-}
-
-export async function saveSocialLinksAction(_previous: ActionState, formData: FormData): Promise<ActionState> {
-  const social: SocialPreferences = {
-    whatsapp: getSubmitted(formData, "social.whatsapp").trim().replace(/\D/g, ""),
-    instagram: getSubmitted(formData, "social.instagram").trim(),
-    facebook: getSubmitted(formData, "social.facebook").trim(),
-    x: getSubmitted(formData, "social.x").trim(),
-    linkedin: getSubmitted(formData, "social.linkedin").trim(),
-    youtube: getSubmitted(formData, "social.youtube").trim(),
-  };
-  if (social.whatsapp && (social.whatsapp.length < 8 || social.whatsapp.length > 15)) return { error: "أدخل رقم WhatsApp دوليًا مع رمز الدولة، من 8 إلى 15 رقمًا." };
-  for (const key of ["instagram", "facebook", "x", "linkedin", "youtube"] as const) {
-    if (social[key].length > 500 || !isSecureSocialUrl(social[key])) return { error: `أدخل رابط HTTPS صالحًا لحساب ${key}.` };
-  }
-  try {
-    const preferences = readPreferences();
-    preferences.contact = { whatsapp: social.whatsapp };
-    preferences.social = {
-      instagram: social.instagram,
-      facebook: social.facebook,
-      x: social.x,
-      linkedin: social.linkedin,
-      youtube: social.youtube,
-    };
-    set(LOCAL_DB_KEYS.preferences, preferences);
-    return { success: "تم حفظ روابط التواصل على هذا الجهاز." };
-  } catch (error) {
-    return { error: error instanceof Error ? error.message : "تعذر حفظ روابط التواصل." };
   }
 }
 
