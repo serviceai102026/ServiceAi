@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { useSitePreferences } from "@/components/site-preferences-provider";
+import { shouldShowAdsOnPathname } from "@/config/ads";
 import type { AdPlacementId } from "@/lib/site-preferences";
 
 declare global {
@@ -16,10 +18,12 @@ export function AdSlot({ id, className, description }: {
   description: string;
 }) {
   const { preferences, adsenseReady } = useSitePreferences();
+  const pathname = usePathname();
+  const adsAllowed = shouldShowAdsOnPathname(pathname || "/");
   const element = useRef<HTMLElement>(null);
   const initialized = useRef("");
   const slot = preferences.adSlots[id];
-  const isConfigured = Boolean(preferences.adsenseClient && slot?.enabled && slot.slotId);
+  const isConfigured = Boolean(adsAllowed && preferences.adsenseClient && slot?.enabled && slot.slotId);
   const slotKey = isConfigured ? `${preferences.adsenseClient}/${slot.slotId}` : "";
 
   useEffect(() => {
@@ -35,6 +39,8 @@ export function AdSlot({ id, className, description }: {
       console.error(`Could not initialize AdSense placement "${id}":`, error);
     }
   }, [adsenseReady, id, isConfigured, slotKey]);
+
+  if (!adsAllowed) return null;
 
   return (
     <aside

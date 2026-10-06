@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { ADS_CONFIG, shouldShowAdsOnPathname } from "@/config/ads";
 import { createDefaultSitePreferences, parseSitePreferences, type SitePreferences } from "@/lib/site-preferences";
 import { get, LOCAL_DB_KEYS, subscribe } from "@/lib/localDB";
 
@@ -47,6 +48,11 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
     const metaName = "google-adsense-account";
     const existingMeta = document.head.querySelector<HTMLMetaElement>(`meta[name="${metaName}"]`);
 
+    if (!ADS_CONFIG.enabled || !shouldShowAdsOnPathname(pathname || "/")) {
+      existingMeta?.remove();
+      return;
+    }
+
     if (!preferencesLoaded && !preferences.adsenseClient) return;
 
     if (!preferences.adsenseClient) {
@@ -62,7 +68,7 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
     return () => {
       if (meta.content === preferences.adsenseClient) meta.remove();
     };
-  }, [preferences.adsenseClient, preferencesLoaded]);
+  }, [pathname, preferences.adsenseClient, preferencesLoaded]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -90,7 +96,9 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
   }, [pathname, preferences.branding.heroDescription]);
 
   const shouldLoadAds = Boolean(
-    preferences.adsenseClient
+    ADS_CONFIG.enabled
+    && shouldShowAdsOnPathname(pathname || "/")
+    && preferences.adsenseClient
     && Object.values(preferences.adSlots).some((slot) => slot.enabled && slot.slotId),
   );
 
@@ -98,7 +106,9 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
     const scriptId = "google-adsense-script";
     const existingScript = document.head.querySelector<HTMLScriptElement>(`#${scriptId}`);
 
-    if (!shouldLoadAds || !preferences.adsenseClient || !navigator.onLine) return;
+    if (!shouldLoadAds || !preferences.adsenseClient || !navigator.onLine) {
+      return;
+    }
 
     const scriptSrc = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(preferences.adsenseClient)}`;
     if (existingScript?.src === scriptSrc) {
@@ -126,7 +136,7 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
       script.onload = null;
       script.onerror = null;
     };
-  }, [preferences.adsenseClient, shouldLoadAds]);
+  }, [pathname, preferences.adsenseClient, shouldLoadAds]);
 
   return (
     <PreferencesContext.Provider value={{

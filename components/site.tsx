@@ -3,7 +3,7 @@ import Image from "next/image";
 import type { ArticleCardData } from "@/lib/data";
 import { articleCardCategory, formatDate } from "@/lib/data";
 import { SiteBrand, SiteFooterBottom, SiteFooterContent } from "@/components/site-branding-display";
-import { WhatsAppFloat } from "@/components/whatsapp-float";
+import { FooterSocialLinks } from "@/components/footer-social-links";
 
 const navLinks = [
   { href: "/", label: "الرئيسية" },
@@ -34,15 +34,13 @@ export function SiteHeader({ active = "" }: { active?: string }) {
 
 export function SiteFooter() {
   return (
-    <>
-      <WhatsAppFloat />
-      <footer className="site-footer">
-        <div className="container footer-main">
-          <SiteFooterContent />
-        </div>
-        <SiteFooterBottom />
-      </footer>
-    </>
+    <footer className="site-footer">
+      <div className="container footer-main">
+        <SiteFooterContent />
+        <FooterSocialLinks />
+      </div>
+      <SiteFooterBottom />
+    </footer>
   );
 }
 

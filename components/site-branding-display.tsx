@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useSitePreferences } from "@/components/site-preferences-provider";
-import { FooterSocialLinks } from "@/components/footer-social-links";
 
 function FooterHref({ href, children }: { href: string; children: React.ReactNode }) {
   if (!href) return null;
@@ -36,7 +35,6 @@ export function SiteFooterContent() {
           <span className="footer-email">{brand.footerContactLabel} <span aria-hidden="true">↗</span></span>
         </FooterHref>
         <a className="footer-email" href={`mailto:${brand.contactEmail}`}>{brand.contactEmail}</a>
-        <FooterSocialLinks />
       </div>
       <div className="footer-column">
         <h2>{brand.footerExploreHeading}</h2>
