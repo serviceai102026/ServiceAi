@@ -1,67 +1,70 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { doc, onSnapshot } from "firebase/firestore";
 import { SocialBrandIcon } from "@/components/social-brand-icon";
+import { getFirebaseFirestore } from "@/lib/firebase";
 
-type SocialLinks = {
-  facebook: string;
-  instagram: string;
-  tiktok: string;
-  whatsapp: string;
-  youtube: string;
-};
+type SocialPlatform = "facebook" | "instagram" | "tiktok" | "whatsapp" | "youtube";
+type SocialLinks = Record<SocialPlatform, string>;
 
-const fields: { name: keyof SocialLinks; label: string }[] = [
+const fields: { name: SocialPlatform; label: string }[] = [
   { name: "facebook", label: "Facebook" },
   { name: "instagram", label: "Instagram" },
   { name: "tiktok", label: "TikTok" },
   { name: "whatsapp", label: "WhatsApp" },
   { name: "youtube", label: "YouTube" },
 ];
+const emptyLinks: SocialLinks = { facebook: "", instagram: "", tiktok: "", whatsapp: "", youtube: "" };
 
 export function FooterSocialLinks() {
-  const [links, setLinks] = useState<SocialLinks | null>(null);
-
+  const [links, setLinks] = useState<SocialLinks>(emptyLinks);
   useEffect(() => {
-    let active = true;
-    void fetch("/api/social", { cache: "no-store" })
-      .then(async (response) => {
-        if (!response.ok) throw new Error(`Social links request failed (HTTP ${response.status}).`);
-        return response.json() as Promise<SocialLinks>;
-      })
-      .then((data) => {
-        if (active) setLinks(data);
-      })
-      .catch((error: unknown) => {
-        if (active) console.error("Could not load footer social links.", error);
+    try {
+      return onSnapshot(doc(getFirebaseFirestore(), "settings", "social"), (snapshot) => {
+        if (!snapshot.exists()) {
+          setLinks(emptyLinks);
+          return;
+        }
+        const stored = snapshot.data();
+        setLinks(Object.fromEntries(fields.map(({ name }) => [
+          name,
+          typeof stored[name] === "string" ? stored[name] : "",
+        ])) as SocialLinks);
+      }, (error) => {
+        console.error("Could not load footer social links from Firestore.", error);
       });
-    return () => { active = false; };
+    } catch (error) {
+      console.error("Could not connect to Firestore for footer social links.", error);
+      return undefined;
+    }
   }, []);
 
-  if (!links) return null;
+  const configuredLinks = fields.flatMap(({ name, label }) => {
+    const href = socialHref(name, links[name]);
+    return href ? [{ name, label, href }] : [];
+  });
+  if (!configuredLinks.length) return null;
+
   return (
     <nav className="footer-social-links" aria-label="حسابات ServiceAI على مواقع التواصل">
-      {fields.map(({ name, label }) => {
-        const href = socialHref(name, links[name]);
-        if (!href) return null;
-        return (
-          <a
-            key={name}
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={label}
-            title={label}
-          >
-            <SocialBrandIcon platform={name} size={17} />
-          </a>
-        );
-      })}
+      {configuredLinks.map(({ name, label, href }) => (
+        <a
+          key={name}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={label}
+          title={label}
+        >
+          <SocialBrandIcon platform={name} size={17} />
+        </a>
+      ))}
     </nav>
   );
 }
 
-function socialHref(platform: keyof SocialLinks, value: string) {
+function socialHref(platform: SocialPlatform, value: string) {
   const link = value.trim();
   if (!link) return "";
   if (platform === "whatsapp" && !/^https?:\/\//i.test(link)) {
