@@ -61,8 +61,11 @@ export function AdminSocialSettings() {
       const result = await response.json() as { links: SocialLinks };
       setLinks(result.links);
       setSuccess("تم الحفظ");
+      window.alert("تم الحفظ ✅");
     } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : "تعذر حفظ روابط التواصل.");
+      const message = saveError instanceof Error ? saveError.message : "تعذر حفظ روابط التواصل.";
+      setError(message);
+      window.alert(`فشل الحفظ\n${message}`);
     } finally {
       setSaving(false);
     }

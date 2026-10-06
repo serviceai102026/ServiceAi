@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { NextResponse } from "next/server";
 
@@ -13,7 +13,8 @@ type SocialLinks = {
   youtube: string;
 };
 
-const socialFile = join(process.cwd(), "data", "social.json");
+const socialDirectory = join(process.cwd(), "data");
+const socialFile = join(socialDirectory, "social.json");
 const socialKeys: (keyof SocialLinks)[] = ["facebook", "instagram", "tiktok", "whatsapp", "youtube"];
 
 export async function GET() {
@@ -44,11 +45,13 @@ export async function POST(request: Request) {
   }
 
   try {
+    await mkdir(socialDirectory, { recursive: true });
     await writeFile(socialFile, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
     return NextResponse.json({ success: true, links: payload }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("Could not write social links JSON file.", error);
-    return NextResponse.json({ error: "Could not save social links." }, { status: 500 });
+    const detail = error instanceof Error ? error.message : "Unknown file-system error.";
+    return NextResponse.json({ error: `Could not save social links: ${detail}` }, { status: 500 });
   }
 }
 
