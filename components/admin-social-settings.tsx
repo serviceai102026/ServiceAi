@@ -1,90 +1,118 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import type { SocialPreferences } from "@/lib/site-preferences";
-import { get, LOCAL_DB_KEYS, set } from "@/lib/localDB";
-import { parseSitePreferences } from "@/lib/site-preferences";
-import { useLocalDBValue } from "@/lib/use-local-db";
+import { useEffect, useState, type FormEvent } from "react";
 
-const fields: { key: keyof SocialPreferences; label: string; placeholder: string; type: "url" | "tel" }[] = [
-  { key: "facebook", label: "Facebook URL", placeholder: "https://facebook.com/your-page", type: "url" },
-  { key: "instagram", label: "Instagram URL", placeholder: "https://instagram.com/your-account", type: "url" },
-  { key: "linkedin", label: "LinkedIn URL", placeholder: "https://linkedin.com/company/your-page", type: "url" },
-  { key: "whatsapp", label: "WhatsApp Number", placeholder: "+212600000000", type: "tel" },
-  { key: "youtube", label: "YouTube URL", placeholder: "https://youtube.com/@your-channel", type: "url" },
+export type SocialLinks = {
+  facebook: string;
+  instagram: string;
+  tiktok: string;
+  whatsapp: string;
+  youtube: string;
+};
+
+const fields: { key: keyof SocialLinks; label: string; placeholder: string }[] = [
+  { key: "facebook", label: "Facebook", placeholder: "https://facebook.com/your-page" },
+  { key: "instagram", label: "Instagram", placeholder: "https://instagram.com/your-account" },
+  { key: "tiktok", label: "TikTok", placeholder: "https://www.tiktok.com/@your-account" },
+  { key: "whatsapp", label: "WhatsApp", placeholder: "https://wa.me/212600000000 أو رقم الهاتف" },
+  { key: "youtube", label: "YouTube", placeholder: "https://youtube.com/@your-channel" },
 ];
 
+const emptyLinks: SocialLinks = { facebook: "", instagram: "", tiktok: "", whatsapp: "", youtube: "" };
+
 export function AdminSocialSettings() {
-  const stored = useLocalDBValue<Record<string, unknown>>(LOCAL_DB_KEYS.preferences, {});
-  const { socialLinks } = parseSitePreferences(stored);
-  const [draft, setDraft] = useState<SocialPreferences | null>(null);
+  const [links, setLinks] = useState<SocialLinks>(emptyLinks);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const values = draft ?? socialLinks;
 
-  function save(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    let active = true;
+    void fetch("/api/social", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(await readApiError(response));
+        return response.json() as Promise<SocialLinks>;
+      })
+      .then((data) => {
+        if (active) setLinks(data);
+      })
+      .catch((loadError: unknown) => {
+        if (active) setError(loadError instanceof Error ? loadError.message : "تعذر تحميل روابط التواصل.");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => { active = false; };
+  }, []);
+
+  async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setSaving(true);
     setError("");
     setSuccess("");
-
-    const normalized: SocialPreferences = {
-      ...values,
-      whatsapp: values.whatsapp.trim(),
-    };
-    if (normalized.whatsapp && normalized.whatsapp.replace(/\D/g, "").length < 8) {
-      setError("أدخل رقم WhatsApp دوليًا وصالحًا.");
-      return;
-    }
-    for (const field of fields) {
-      if (field.key === "whatsapp" || !normalized[field.key]) continue;
-      if (!isHttpsUrl(normalized[field.key])) {
-        setError(`أدخل رابط HTTPS صالحًا لحساب ${field.label}.`);
-        return;
-      }
-    }
-
     try {
-      const current = get<Record<string, unknown>>(LOCAL_DB_KEYS.preferences, {});
-      set(LOCAL_DB_KEYS.preferences, { ...current, social_links: normalized });
-      setDraft(normalized);
+      const response = await fetch("/api/social", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(links),
+      });
+      if (!response.ok) throw new Error(await readApiError(response));
+      const result = await response.json() as { links: SocialLinks };
+      setLinks(result.links);
       setSuccess("تم الحفظ");
     } catch (saveError) {
-      console.error("Could not save local social links.", saveError);
       setError(saveError instanceof Error ? saveError.message : "تعذر حفظ روابط التواصل.");
+    } finally {
+      setSaving(false);
     }
   }
 
   return (
     <div className="admin-page">
-      <div className="admin-page-heading"><div><span className="admin-kicker">إعدادات التذييل</span><h1>التحكم في مواقع التواصل الاجتماعي</h1><p>تُحفظ الروابط محليًا في هذا المتصفح وتظهر في الفوتر عند فتح الموقع منه.</p></div></div>
+      <div className="admin-page-heading">
+        <div><span className="admin-kicker">إعدادات التذييل</span><h1>التحكم في مواقع التواصل الاجتماعي</h1><p>أدخل الروابط التي تريد إظهارها في تذييل الموقع.</p></div>
+      </div>
       <form className="site-settings-form" onSubmit={save}>
         {error && <p className="admin-alert" role="alert">{error}</p>}
         {success && <p className="admin-success" role="status">{success}</p>}
         <section className="admin-panel-card site-settings-card">
-          <div className="admin-card-heading"><div><h2>روابط التواصل</h2><p>إعداد محلي لهذا المتصفح، دون اتصال بـ Firebase.</p></div></div>
-          <div className="social-settings-grid">
-            {fields.map((field) => (
-              <label className="site-settings-field social-settings-field" key={field.key} htmlFor={`admin-social-${field.key}`}>
-                <span>{field.label}</span>
-                <input id={`admin-social-${field.key}`} type={field.type} dir="ltr" value={values[field.key]} placeholder={field.placeholder} maxLength={500} onChange={(event) => setDraft((current) => ({ ...(current ?? socialLinks), [field.key]: event.target.value }))} />
-              </label>
-            ))}
-          </div>
+          <div className="admin-card-heading"><div><h2>روابط التواصل</h2><p>الحقول الفارغة لا تظهر في التذييل.</p></div></div>
+          {loading ? <p role="status">جارٍ تحميل الروابط...</p> : (
+            <div className="social-settings-grid">
+              {fields.map((field) => (
+                <label className="site-settings-field social-settings-field" key={field.key} htmlFor={`admin-social-${field.key}`}>
+                  <span>{field.label}</span>
+                  <input
+                    id={`admin-social-${field.key}`}
+                    type="text"
+                    dir="ltr"
+                    value={links[field.key]}
+                    placeholder={field.placeholder}
+                    onChange={(event) => setLinks((current) => ({ ...current, [field.key]: event.target.value }))}
+                  />
+                </label>
+              ))}
+            </div>
+          )}
         </section>
         <div className="site-settings-submit">
-          <p>تعمل هذه الإعدادات على هذا المتصفح فقط.</p>
-          <button className="admin-button admin-button-primary" type="submit">حفظ</button>
+          <p>تُحفظ الروابط في ملف JSON.</p>
+          <button className="admin-button admin-button-primary" type="submit" disabled={loading || saving}>
+            {saving ? "جارٍ الحفظ..." : "حفظ"}
+          </button>
         </div>
       </form>
     </div>
   );
 }
 
-function isHttpsUrl(value: string) {
+async function readApiError(response: Response) {
   try {
-    const url = new URL(value);
-    return url.protocol === "https:" && Boolean(url.hostname) && !url.username && !url.password;
+    const body = await response.json() as { error?: unknown };
+    if (typeof body.error === "string") return body.error;
   } catch {
-    return false;
+    // Use the HTTP status when the response isn't JSON.
   }
+  return `تعذر إكمال الطلب (HTTP ${response.status}).`;
 }
