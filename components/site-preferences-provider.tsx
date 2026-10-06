@@ -3,16 +3,19 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ADS_CONFIG, shouldShowAdsOnPathname } from "@/config/ads";
+import { ADSENSE_SETTINGS_KEY, createDefaultAdsenseSettings, readAdsenseSettings, type AdsenseSettings } from "@/lib/adsense-settings";
 import { createDefaultSitePreferences, parseSitePreferences, type SitePreferences } from "@/lib/site-preferences";
 import { get, LOCAL_DB_KEYS, subscribe } from "@/lib/localDB";
 
 type PreferencesContextValue = {
   preferences: SitePreferences;
+  adsenseSettings: AdsenseSettings;
   adsenseReady: boolean;
 };
 
 const PreferencesContext = createContext<PreferencesContextValue>({
   preferences: createDefaultSitePreferences(),
+  adsenseSettings: createDefaultAdsenseSettings(),
   adsenseReady: false,
 });
 
@@ -23,14 +26,13 @@ export function useSitePreferences() {
 export function SitePreferencesProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [preferences, setPreferences] = useState(createDefaultSitePreferences);
-  const [preferencesLoaded, setPreferencesLoaded] = useState(false);
   const [readyPublisherId, setReadyPublisherId] = useState("");
+  const [adsenseSettings, setAdsenseSettings] = useState(createDefaultAdsenseSettings);
 
   useEffect(() => {
     const loadPreferences = () => {
       const data = get<Record<string, unknown>>(LOCAL_DB_KEYS.preferences, {});
       setPreferences(parseSitePreferences(data));
-      setPreferencesLoaded(true);
     };
     loadPreferences();
     const unsubscribe = subscribe((key) => {
@@ -45,6 +47,28 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
   }, []);
 
   useEffect(() => {
+    const loadAdsenseSettings = () => {
+      try {
+        setAdsenseSettings(readAdsenseSettings());
+      } catch (error) {
+        console.error("Could not load AdSense settings from local storage.", error);
+        setAdsenseSettings(createDefaultAdsenseSettings());
+      }
+    };
+    loadAdsenseSettings();
+    const onSettingsUpdated = () => loadAdsenseSettings();
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === ADSENSE_SETTINGS_KEY) loadAdsenseSettings();
+    };
+    window.addEventListener("adsense-settings-updated", onSettingsUpdated);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("adsense-settings-updated", onSettingsUpdated);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
+
+  useEffect(() => {
     const metaName = "google-adsense-account";
     const existingMeta = document.head.querySelector<HTMLMetaElement>(`meta[name="${metaName}"]`);
 
@@ -53,22 +77,22 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
       return;
     }
 
-    if (!preferencesLoaded && !preferences.adsenseClient) return;
+    const publisherId = adsenseSettings.publisherId;
 
-    if (!preferences.adsenseClient) {
+    if (!publisherId) {
       existingMeta?.remove();
       return;
     }
 
     const meta = existingMeta ?? document.createElement("meta");
     meta.name = metaName;
-    meta.content = preferences.adsenseClient;
+    meta.content = publisherId;
     if (!existingMeta) document.head.append(meta);
 
     return () => {
-      if (meta.content === preferences.adsenseClient) meta.remove();
+      if (meta.content === publisherId) meta.remove();
     };
-  }, [pathname, preferences.adsenseClient, preferencesLoaded]);
+  }, [adsenseSettings.publisherId, pathname]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -98,19 +122,20 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
   const shouldLoadAds = Boolean(
     ADS_CONFIG.enabled
     && shouldShowAdsOnPathname(pathname || "/")
-    && preferences.adsenseClient
-    && Object.values(preferences.adSlots).some((slot) => slot.enabled && slot.slotId),
+    && adsenseSettings.publisherId
+    && adsenseSettings.slots.some((slot) => slot.enabled && slot.slot),
   );
 
   useEffect(() => {
     const scriptId = "google-adsense-script";
     const existingScript = document.head.querySelector<HTMLScriptElement>(`#${scriptId}`);
 
-    if (!shouldLoadAds || !preferences.adsenseClient || !navigator.onLine) {
+    if (!shouldLoadAds || !adsenseSettings.publisherId || !navigator.onLine) {
+      existingScript?.remove();
       return;
     }
 
-    const scriptSrc = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(preferences.adsenseClient)}`;
+    const scriptSrc = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(adsenseSettings.publisherId)}`;
     if (existingScript?.src === scriptSrc) {
       existingScript.dataset.loaded = "true";
       return;
@@ -124,7 +149,7 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
     script.src = scriptSrc;
     script.onload = () => {
       script.dataset.loaded = "true";
-      setReadyPublisherId(preferences.adsenseClient);
+      setReadyPublisherId(adsenseSettings.publisherId);
     };
     script.onerror = () => {
       setReadyPublisherId("");
@@ -136,12 +161,13 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
       script.onload = null;
       script.onerror = null;
     };
-  }, [pathname, preferences.adsenseClient, shouldLoadAds]);
+  }, [adsenseSettings.publisherId, pathname, shouldLoadAds]);
 
   return (
     <PreferencesContext.Provider value={{
       preferences,
-      adsenseReady: shouldLoadAds && readyPublisherId === preferences.adsenseClient,
+      adsenseSettings,
+      adsenseReady: shouldLoadAds && readyPublisherId === adsenseSettings.publisherId,
     }}>
       {children}
     </PreferencesContext.Provider>

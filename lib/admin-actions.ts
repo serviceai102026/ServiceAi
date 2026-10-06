@@ -6,11 +6,9 @@ import { add, get, LOCAL_DB_KEYS, makeId, remove, set } from "@/lib/localDB";
 import { getAllArticles, getCategories, type ArticleData, type Category } from "@/lib/data";
 import { slugify } from "@/lib/slug";
 import {
-  AD_PLACEMENTS,
   createDefaultSitePreferences,
   type HomeSliderSlide,
   type SiteBranding,
-  type SitePreferences,
 } from "@/lib/site-preferences";
 
 export type ActionState = { error?: string; success?: string };
@@ -171,26 +169,6 @@ export async function deleteCategoryAction(formData: FormData) {
     return;
   }
   remove<Category>(LOCAL_DB_KEYS.categories, id);
-}
-
-export async function saveSiteSettingsAction(_previous: ActionState, formData: FormData): Promise<ActionState> {
-  const client = getSubmitted(formData, "adsense_client").trim();
-  if (client && !/^ca-pub-[0-9]{16}$/.test(client)) return { error: "أدخل معرّف ناشر صحيحًا يبدأ بـ ca-pub- ويتبعه 16 رقمًا." };
-  const slots = {} as SitePreferences["adSlots"];
-  for (const { id, label } of AD_PLACEMENTS) {
-    const slotId = getSubmitted(formData, `slot.${id}.slot_id`).trim();
-    const enabled = formData.get(`slot.${id}.enabled`) === "on";
-    if (!/^[0-9]{0,32}$/.test(slotId)) return { error: `${label}: رقم Ad Slot غير صالح.` };
-    if (enabled && !slotId) return { error: `أدخل رقم Ad Slot لموضع «${label}» أو أوقف تفعيله.` };
-    slots[id] = { enabled, slotId };
-  }
-  if (Object.values(slots).some((slot) => slot.enabled) && !client) return { error: "أدخل معرّف ناشر AdSense قبل تفعيل أي موضع إعلاني." };
-  try {
-    writePreference("adsense", { client, slots });
-    return { success: "تم حفظ إعدادات Google AdSense على هذا الجهاز." };
-  } catch (error) {
-    return { error: error instanceof Error ? error.message : "تعذر حفظ الإعدادات المحلية." };
-  }
 }
 
 function isSecureSocialUrl(value: string): boolean {

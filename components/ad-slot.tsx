@@ -17,14 +17,14 @@ export function AdSlot({ id, className, description }: {
   className: string;
   description: string;
 }) {
-  const { preferences, adsenseReady } = useSitePreferences();
+  const { adsenseSettings, adsenseReady } = useSitePreferences();
   const pathname = usePathname();
   const adsAllowed = shouldShowAdsOnPathname(pathname || "/");
   const element = useRef<HTMLElement>(null);
   const initialized = useRef("");
-  const slot = preferences.adSlots[id];
-  const isConfigured = Boolean(adsAllowed && preferences.adsenseClient && slot?.enabled && slot.slotId);
-  const slotKey = isConfigured ? `${preferences.adsenseClient}/${slot.slotId}` : "";
+  const slot = adsenseSettings.slots.find((item) => item.id === id);
+  const isConfigured = Boolean(adsAllowed && adsenseSettings.publisherId && slot?.enabled && slot.slot);
+  const slotKey = isConfigured ? `${adsenseSettings.publisherId}/${slot?.slot}` : "";
 
   useEffect(() => {
     if (!isConfigured) {
@@ -40,7 +40,7 @@ export function AdSlot({ id, className, description }: {
     }
   }, [adsenseReady, id, isConfigured, slotKey]);
 
-  if (!adsAllowed) return null;
+  if (!adsAllowed || (slot && !slot.enabled)) return null;
 
   return (
     <aside
@@ -53,8 +53,8 @@ export function AdSlot({ id, className, description }: {
           key={slotKey}
           className="adsbygoogle"
           style={{ display: "block" }}
-          data-ad-client={preferences.adsenseClient}
-          data-ad-slot={slot.slotId}
+          data-ad-client={adsenseSettings.publisherId}
+          data-ad-slot={slot?.slot}
           data-ad-format="auto"
           data-full-width-responsive="true"
         />

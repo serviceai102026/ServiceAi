@@ -12,6 +12,6 @@ export default function AdminSettingsPage() {
   return <div className="admin-page">
     <div className="admin-page-heading"><div><span className="admin-kicker">تخصيص الموقع</span><h1>إعدادات الموقع</h1><p>تُحفظ الهوية والإعلانات محليًا في هذا المتصفح، وتنعكس تغييرات الهوية على الواجهة فور حفظها.</p></div></div>
     <SiteBrandingForm key={JSON.stringify(preferences.branding)} branding={preferences.branding} />
-    <SiteSettingsForm key={`ads-${JSON.stringify(stored)}`} preferences={preferences} />
+    <SiteSettingsForm />
   </div>;
 }
