@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { FileText, Files, Images, KeyRound, LayoutDashboard, LogOut, Megaphone, Palette, Settings2, Share2, Sparkles, Wrench } from "lucide-react";
-import { logoutLocalAdmin } from "@/lib/local-admin-auth";
 
 const navigation = [
   { href: "/admin", label: "نظرة عامة", icon: LayoutDashboard },
@@ -24,12 +23,12 @@ export function AdminShell({ children, email }: { children: React.ReactNode; ema
   const pathname = usePathname();
   const router = useRouter();
 
-  function logout() {
+  async function logout() {
     try {
-      logoutLocalAdmin();
+      await fetch("/api/admin/auth", { method: "DELETE" });
       router.replace("/admin/login");
     } catch (error) {
-      console.error("تعذر تسجيل خروج المدير المحلي.", error);
+      console.error("تعذر إنهاء جلسة المدير.", error);
     }
   }
 

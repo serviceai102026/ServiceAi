@@ -1,27 +1,36 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { loginLocalAdmin } from "@/lib/local-admin-auth";
 
 export function AdminLoginForm() {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setPending(true);
+    const formData = new FormData(event.currentTarget);
     try {
-      const formData = new FormData(event.currentTarget);
-      if (!loginLocalAdmin(String(formData.get("email") ?? ""), String(formData.get("password") ?? ""))) {
-        setError("البريد الإلكتروني أو كلمة المرور غير صحيحة.");
-        return;
+      const response = await fetch("/api/admin/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: String(formData.get("email") ?? ""),
+          password: String(formData.get("password") ?? ""),
+        }),
+      });
+      const result: unknown = await response.json();
+      if (!response.ok) {
+        const message = result && typeof result === "object" && "error" in result && typeof result.error === "string"
+          ? result.error
+          : "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
+        throw new Error(message);
       }
       window.location.replace("/admin");
     } catch (cause) {
-      console.error("تعذر تسجيل دخول المدير المحلي.", cause);
-      setError("تعذر استخدام التخزين المحلي. تحقق من إعدادات المتصفح.");
-    } finally {
+      console.error("تعذر تسجيل دخول المدير.", cause);
+      setError(cause instanceof Error ? cause.message : "تعذر إكمال تسجيل الدخول.");
       setPending(false);
     }
   }

@@ -23,8 +23,6 @@ function isSocialLinks(value: unknown): value is SocialLinks {
 
 export function AdminSocialSettings() {
   const [links, setLinks] = useState<SocialLinks>(() => createDefaultSitePreferences().socialLinks);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [ready, setReady] = useState(false);
   const [pending, setPending] = useState(false);
   const [notice, setNotice] = useState("");
@@ -81,17 +79,12 @@ export function AdminSocialSettings() {
         return;
       }
     }
-    if (!email.trim() || !password) {
-      setError("أدخل بريد المدير وكلمة المرور لتأكيد الحفظ على الخادم.");
-      return;
-    }
-
     setPending(true);
     try {
       const response = await fetch("/api/social-links", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ socialLinks: links, email, password }),
+        body: JSON.stringify({ socialLinks: links }),
       });
       const result: unknown = await response.json();
       if (!response.ok) {
@@ -100,7 +93,6 @@ export function AdminSocialSettings() {
           : "تعذر حفظ روابط التواصل.";
         throw new Error(message);
       }
-      setPassword("");
       window.dispatchEvent(new Event("serviceai-social-links-updated"));
       setNotice("تم حفظ روابط التواصل، وأصبحت متاحة لجميع الزوار ✅");
     } catch (saveError) {
@@ -141,14 +133,6 @@ export function AdminSocialSettings() {
               </label>
             ))}
           </div>
-          <label className="site-settings-field" htmlFor="social-admin-email">
-            <span>بريد المدير لتأكيد الحفظ</span>
-            <input id="social-admin-email" type="email" dir="ltr" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} disabled={pending} />
-          </label>
-          <label className="site-settings-field" htmlFor="social-admin-password">
-            <span>كلمة مرور المدير</span>
-            <input id="social-admin-password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} disabled={pending} />
-          </label>
         </section>
         <div className="site-settings-submit">
           <p>تظهر الروابط المحفوظة لجميع الزوار بعد تحديث الصفحة.</p>

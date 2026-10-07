@@ -4,43 +4,47 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AdminShell } from "@/app/admin/admin-shell";
 
-const DEFAULT_EMAIL = "tahar@gmail.com";
-const DEFAULT_PASS = "admin123";
-
 export function AdminAuthGate({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [logged, setLogged] = useState(false);
-  const [email, setEmail] = useState(DEFAULT_EMAIL);
-  const [storageError, setStorageError] = useState(false);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => {
+    let active = true;
+    async function verifySession() {
       try {
-        const savedEmail = window.localStorage.getItem("admin_email") || DEFAULT_EMAIL;
-        if (!window.localStorage.getItem("admin_email")) {
-          window.localStorage.setItem("admin_email", DEFAULT_EMAIL);
-        }
-        if (!window.localStorage.getItem("admin_password")) {
-          window.localStorage.setItem("admin_password", DEFAULT_PASS);
-        }
-        if (window.localStorage.getItem("admin_logged") === "true") {
-          setEmail(savedEmail);
-          setLogged(true);
-          setLoading(false);
-        } else {
-          setLoading(false);
+        const response = await fetch("/api/admin/auth", { cache: "no-store" });
+        if (!response.ok) {
           window.location.replace("/admin/login");
+          return;
         }
+        const session: unknown = await response.json();
+        if (
+          session
+          && typeof session === "object"
+          && "authenticated" in session
+          && session.authenticated === true
+          && "email" in session
+          && typeof session.email === "string"
+        ) {
+          if (active) {
+            setEmail(session.email);
+            setLogged(true);
+            setLoading(false);
+          }
+          return;
+        }
+        window.location.replace("/admin/login");
       } catch (error) {
-        console.error("تعذر التحقق من دخول المدير المحلي.", error);
-        setStorageError(true);
-        setLoading(false);
+        console.error("تعذر التحقق من جلسة المدير.", error);
+        if (active) setLoading(false);
       }
-    }, 0);
-    return () => window.clearTimeout(timeout);
+    }
+    void verifySession();
+    return () => { active = false; };
   }, []);
 
   if (loading) return <div className="admin-login-page"><p role="status">جارٍ التحقق من الدخول...</p></div>;
   if (logged) return <AdminShell email={email}>{children}</AdminShell>;
-  return <div className="admin-login-page"><p className={storageError ? "admin-alert" : ""} role={storageError ? "alert" : "status"}>{storageError ? "تعذر الوصول إلى التخزين المحلي. فعّل التخزين في المتصفح ثم أعد المحاولة." : "يلزم تسجيل الدخول لفتح لوحة التحكم."}</p><Link className="admin-login-back" href="/admin/login">الانتقال إلى تسجيل الدخول</Link></div>;
+  return <div className="admin-login-page"><p className="admin-alert" role="alert">تعذر التحقق من جلسة المدير. تحقق من اتصال الخادم ثم أعد المحاولة.</p><Link className="admin-login-back" href="/admin/login">الانتقال إلى تسجيل الدخول</Link></div>;
 }

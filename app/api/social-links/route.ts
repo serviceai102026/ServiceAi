@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import {
-  isValidSocialAdminCredentials,
   readSharedSocialLinks,
   saveSharedSocialLinks,
   validateSocialLinks,
 } from "@/lib/social-links-store";
+import { readAdminSession } from "@/lib/admin-session";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -24,6 +24,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (!readAdminSession(request)) {
+    return NextResponse.json({ error: "انتهت جلسة المدير. سجّل الدخول مجددًا." }, { status: 401 });
+  }
+
   let body: unknown;
   try {
     body = await request.json();
@@ -31,14 +35,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "بيانات الطلب غير صالحة." }, { status: 400 });
   }
 
-  if (!body || typeof body !== "object" || !("email" in body) || !("password" in body)) {
-    return NextResponse.json({ error: "أدخل بيانات المدير لتأكيد الحفظ." }, { status: 400 });
-  }
-  if (!isValidSocialAdminCredentials(body.email, body.password)) {
-    return NextResponse.json({ error: "بيانات المدير غير صحيحة." }, { status: 401 });
-  }
-
-  const links = validateSocialLinks("socialLinks" in body ? body.socialLinks : null);
+  const socialLinks = body && typeof body === "object" && !Array.isArray(body) && "socialLinks" in body
+    ? (body as Record<string, unknown>).socialLinks
+    : null;
+  const links = validateSocialLinks(socialLinks);
   if (!links) {
     return NextResponse.json({ error: "تحقق من روابط التواصل وأدخل روابط صالحة." }, { status: 400 });
   }
