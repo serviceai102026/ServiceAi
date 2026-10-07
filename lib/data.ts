@@ -49,6 +49,14 @@ function categories(): Category[] {
   return get<Category[]>(LOCAL_DB_KEYS.categories, []);
 }
 
+export function normalizeArticleSlug(slug: string): string {
+  try {
+    return decodeURIComponent(slug).normalize("NFC").toLocaleLowerCase();
+  } catch {
+    return slug.normalize("NFC").toLocaleLowerCase();
+  }
+}
+
 function normalizeArticle(article: StoredArticle): ArticleData {
   const category = article.category && typeof article.category === "object"
     ? article.category
@@ -122,8 +130,9 @@ export function getPublishedArticles(limit?: number): ArticleCardData[] {
 }
 
 export function getPublishedArticle(slug: string): ArticleData | null {
+  const normalizedSlug = normalizeArticleSlug(slug);
   const article = articles()
-    .find((item) => item.slug === slug && item.status === "published"
+    .find((item) => normalizeArticleSlug(item.slug) === normalizedSlug && item.status === "published"
       && (!item.published_at || Date.parse(item.published_at) <= Date.now()));
   return article ?? null;
 }

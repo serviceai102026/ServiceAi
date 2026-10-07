@@ -5,13 +5,18 @@ import { ArticleCard, SiteFooter, SiteHeader } from "@/components/site";
 import { LocalArticlePage } from "@/components/local-blog";
 import blogs from "@/data/blogs";
 import { sanitizeArticleHtml } from "@/lib/content";
-import type { ArticleCardData } from "@/lib/data";
+import { normalizeArticleSlug, type ArticleCardData } from "@/lib/data";
+
+function findBlog(slug: string) {
+  const normalizedSlug = normalizeArticleSlug(slug);
+  return blogs.find((article) => normalizeArticleSlug(article.slug) === normalizedSlug);
+}
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const post = blogs.find((article) => article.slug === slug);
+  const post = findBlog(slug);
   return {
     title: post?.seo_title ?? "مقال مهني | ServiceAI",
     description: post?.seo_description ?? "مقال ونصائح مهنية من مدونة ServiceAI.",
@@ -48,7 +53,7 @@ function toArticleCard(post: (typeof blogs)[number]): ArticleCardData {
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = blogs.find((article) => article.slug === slug);
+  const post = findBlog(slug);
   return <><SiteHeader active="/blog" /><main id="main"><article className="article-page">
     {post ? <div className="container">
       <header className="article-header">
