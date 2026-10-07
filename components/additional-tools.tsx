@@ -17,20 +17,57 @@ export function CareerGuidanceTool() {
   const [goal, setGoal] = useState("");
   const [plan, setPlan] = useState(false);
 
-  return <section className="section mini-tool-section"><div className="container">
-    <form className="mini-tool-panel" onSubmit={(event) => { event.preventDefault(); setPlan(true); }}>
-      <h2>كوّن خطة مهنية أولية</h2>
-      <p>أجب عن سؤالين لتحصل على خطوات إرشادية عملية. لا تُرسل إجاباتك إلى خادم.</p>
-      <label>المجال أو المسمى الذي تستهدفه<input value={role} onChange={(event) => setRole(event.currentTarget.value)} placeholder="مثال: التسويق الرقمي" required /></label>
-      <label>هدفك المهني في الأشهر القادمة<textarea value={goal} onChange={(event) => setGoal(event.currentTarget.value)} rows={3} placeholder="مثال: إيجاد فرصة مبتدئة أو تطوير مهارة محددة" required /></label>
-      <button className="button" type="submit">اعرض خطتي <span aria-hidden="true">←</span></button>
-      {plan && <div className="mini-tool-result" role="status"><h3>خطواتك المقترحة نحو {role}</h3><ol>
-        <li>راجع 3 إعلانات وظائف في {role} وسجّل المهارات المتكررة بينها.</li>
-        <li>حدّث سيرتك الذاتية لتوضح خبراتك المرتبطة بهدفك: {goal}.</li>
-        <li>حدّد موعدًا أسبوعيًا للتقديم والمتابعة، ثم راجع النتائج وعدّل خطتك.</li>
-      </ol><p>هذه إرشادات عامة لمساعدتك على التخطيط، وليست توصية مهنية مخصصة.</p></div>}
-    </form>
-  </div></section>;
+  return <section className="career-guide-section" dir="rtl">
+    <div className="container career-guide-container">
+      <form className="career-guide-form" onSubmit={(event) => { event.preventDefault(); setPlan(true); }}>
+        <div className="career-guide-form-heading">
+          <span className="eyebrow"><span className="eyebrow-dot" />ابدأ بخطوتين واضحتين</span>
+          <h2>كوّن خطة مهنية أولية</h2>
+          <p>حدّد المجال الذي تستهدفه وما تريد تحقيقه. تبقى إجاباتك في متصفحك.</p>
+        </div>
+        <div className="career-guide-fields">
+          <label htmlFor="career-target-role">
+            <span>المجال أو المسمى المستهدف</span>
+            <input
+              id="career-target-role"
+              dir="rtl"
+              value={role}
+              onChange={(event) => { setRole(event.currentTarget.value); setPlan(false); }}
+              placeholder="مثال: التسويق الرقمي"
+              maxLength={100}
+              required
+            />
+          </label>
+          <label htmlFor="career-target-goal">
+            <span>هدفك المهني في الأشهر القادمة</span>
+            <input
+              id="career-target-goal"
+              dir="rtl"
+              value={goal}
+              onChange={(event) => { setGoal(event.currentTarget.value); setPlan(false); }}
+              placeholder="مثال: الحصول على أول فرصة عمل"
+              maxLength={180}
+              required
+            />
+          </label>
+        </div>
+        <button className="career-guide-submit" type="submit">اعرض خطتي <span aria-hidden="true">←</span></button>
+      </form>
+      {plan && <section className="career-plan-results" aria-live="polite" aria-labelledby="career-plan-heading">
+        <div className="career-plan-heading">
+          <span className="eyebrow">خطة عملية قابلة للتنفيذ</span>
+          <h2 id="career-plan-heading">خطواتك نحو {role}</h2>
+          <p>هدفك: {goal}</p>
+        </div>
+        <div className="career-plan-cards">
+          <article className="career-plan-card"><span>01</span><h3>افهم متطلبات المجال</h3><p>راجع ثلاثة إعلانات وظائف في {role}، واكتب المهارات والمسؤوليات التي تتكرر بينها.</p></article>
+          <article className="career-plan-card"><span>02</span><h3>جهّز ما يثبت جاهزيتك</h3><p>حدّث سيرتك الذاتية أو معرض أعمالك، وأبرز الخبرات المرتبطة بهدفك: {goal}.</p></article>
+          <article className="career-plan-card"><span>03</span><h3>تابع تقدمك أسبوعيًا</h3><p>خصص وقتًا للتقديم والمتابعة، وسجّل النتائج لتعرف ما يحتاج إلى تحسين في خطتك.</p></article>
+        </div>
+        <p className="career-plan-note">هذه إرشادات عامة للتخطيط المهني، وليست توصية مهنية مخصصة.</p>
+      </section>}
+    </div>
+  </section>;
 }
 
 export function JobSearchOrganizer() {

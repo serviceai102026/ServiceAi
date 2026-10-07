@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { getFirebaseFirestore } from "@/lib/firebase";
-import { parseAdSenseSnippet, parseBlogAdsSettings, type BlogAdKey } from "@/lib/blog-ads";
+import { parseAdSenseSnippet } from "@/lib/blog-ads";
+import { ADS_CONFIG, parseAdsConfig, readAdsConfigOverride, type AdsPlacement, type AdsConfig } from "@/lib/ads-config";
 import { sanitizeBlogAdHtml } from "@/lib/content";
 import { shouldShowAdsOnPathname } from "@/config/ads";
 import { usePathname } from "next/navigation";
@@ -15,43 +14,41 @@ declare global {
   }
 }
 
-export function AdSlot({ placement }: { placement: BlogAdKey }) {
-  const [settings, setSettings] = useState(() => parseBlogAdsSettings({}));
+type AdSlotProps =
+  | { placement: AdsPlacement; code?: never }
+  | { code: string; placement?: never };
+
+export function AdSlot(props: AdSlotProps) {
+  const [settings, setSettings] = useState<AdsConfig>(() => parseAdsConfig(ADS_CONFIG));
   const [loaded, setLoaded] = useState(false);
-  const [loadError, setLoadError] = useState(false);
   const element = useRef<HTMLElement>(null);
   const initialized = useRef("");
   const pathname = usePathname();
   const adsAllowed = shouldShowAdsOnPathname(pathname || "/");
   const { adsenseSettings } = useSitePreferences();
-  const enabledKey = `${placement}_enabled` as `${BlogAdKey}_enabled`;
-  const codeKey = `${placement}_code` as `${BlogAdKey}_code`;
-  const code = settings[codeKey].trim();
-  const ad = parseAdSenseSnippet(code, adsenseSettings.publisherId);
-  const isAdSense = Boolean(adsAllowed && settings[enabledKey] && ad.publisherId && ad.slotId);
+  const placement = props.placement;
+  const placementSettings = placement ? settings[placement] : null;
+  const code = (placementSettings?.code ?? props.code ?? "").trim();
+  const publisherId = adsenseSettings.publisherId;
+  const isEnabled = placementSettings?.enabled ?? Boolean(code);
+  const ad = parseAdSenseSnippet(code, publisherId);
+  const isAdSense = Boolean(adsAllowed && isEnabled && ad.publisherId && ad.slotId);
   const slotKey = isAdSense ? `${ad.publisherId}/${ad.slotId}` : "";
   const isMarkup = /<\/?[a-z][^>]*>/i.test(code);
   const safeHtml = isMarkup && !isAdSense ? sanitizeBlogAdHtml(code) : "";
 
   useEffect(() => {
-    try {
-      return onSnapshot(doc(getFirebaseFirestore(), "settings", "ads"), (snapshot) => {
-        setSettings(parseBlogAdsSettings(snapshot.exists() ? snapshot.data() : {}));
-        setLoaded(true);
-        setLoadError(false);
-      }, (error) => {
-        console.error("Could not load blog ad settings from Firestore.", error);
-        setLoadError(true);
-        setLoaded(true);
-      });
-    } catch (error) {
-      console.error("Could not initialize blog ad settings listener.", error);
-      queueMicrotask(() => {
-        setLoadError(true);
-        setLoaded(true);
-      });
-      return undefined;
-    }
+    const loadSettings = () => {
+      setSettings(readAdsConfigOverride());
+      setLoaded(true);
+    };
+    loadSettings();
+    window.addEventListener("storage", loadSettings);
+    window.addEventListener("serviceai-ads-config-updated", loadSettings);
+    return () => {
+      window.removeEventListener("storage", loadSettings);
+      window.removeEventListener("serviceai-ads-config-updated", loadSettings);
+    };
   }, []);
 
   useEffect(() => {
@@ -78,16 +75,16 @@ export function AdSlot({ placement }: { placement: BlogAdKey }) {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
       initialized.current = slotKey;
     } catch (error) {
-      console.error(`Could not initialize blog AdSense placement "${placement}".`, error);
+      console.error(`Could not initialize AdSense placement "${placement ?? "tool page"}".`, error);
     }
   }, [ad.publisherId, isAdSense, placement, slotKey]);
 
-  if (!adsAllowed || !loaded || loadError || !settings[enabledKey] || !code) return null;
+  if (!adsAllowed || !loaded || !isEnabled || !code) return null;
 
   return (
     <aside
       ref={element}
-      className={`blog-ad-slot${isAdSense ? " adsense-slot" : " ad-custom-content"}`}
+      className={`blog-ad-slot${isAdSense ? " adsense-slot" : " ad-custom-content"}${placement === "top" || placement === "bottom" || !placement ? " tool-page-ad" : ""}`}
       aria-label="إعلان"
     >
       {isAdSense ? (

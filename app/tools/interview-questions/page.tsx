@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { InterviewQuestionGenerator } from "@/components/interview-question-generator";
 import { AdSlot } from "@/components/ad-slot";
 import { SiteFooter, SiteHeader } from "@/components/site";
+import { ToolPageAd } from "@/components/tool-page-ads";
 
 export const metadata: Metadata = {
   title: "مولد أسئلة مقابلات العمل المجاني | Interview Questions Generator",
@@ -63,6 +64,7 @@ export default function InterviewQuestionsPage() {
           <div className="page-hero-art tool-hero-art" aria-hidden="true"><span className="hero-art-shape shape-tool-one">?</span><span className="hero-art-shape shape-tool-two">✓</span><div className="tool-hero-sheet interview-hero-sheet"><span /><span /><span /><span /><b>Interview<br />Practice</b></div></div>
         </div>
       </section>
+      <ToolPageAd position="top" />
       <AdSlot id="interview-questions-intro" className="container interview-page-ad interview-intro-ad" description="موضع هادئ بعد مقدمة الأداة." />
       <section className="section interview-tool-section"><div className="container">
         <div className="interview-section-intro"><div><span className="eyebrow">تدرّب بخطة واضحة</span><h2>أسئلة وإجابات <span className="text-gradient">للمقابلة القادمة.</span></h2><p>اختر نوع المقابلة واللغة، وأضف الوصف الوظيفي لربط التدريب بمتطلبات الإعلان.</p></div><span className="interview-free-mark">5–20 سؤالًا <b>·</b> 5 لغات</span></div>
@@ -85,6 +87,7 @@ export default function InterviewQuestionsPage() {
         <section className="interview-faq-section"><div className="section-heading"><span className="eyebrow">أسئلة شائعة</span><h2>استفسارات حول <span className="text-gradient">التدريب للمقابلات.</span></h2></div><div className="faq-list">{faqs.map(([question, answer]) => <details className="faq-item" key={question}><summary>{question}<span className="faq-plus" aria-hidden="true" /></summary><p>{answer}</p></details>)}</div></section>
       </div></section>
       <AdSlot id="interview-questions-bottom" className="container interview-page-ad interview-bottom-ad" description="موضع اختياري أسفل الصفحة." />
+      <ToolPageAd position="bottom" />
     </main>
     <SiteFooter />
   </>;

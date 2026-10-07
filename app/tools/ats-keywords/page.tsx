@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AtsKeywordGenerator } from "@/components/ats-keyword-generator";
 import { AdSlot } from "@/components/ad-slot";
 import { SiteFooter, SiteHeader } from "@/components/site";
+import { ToolPageAd } from "@/components/tool-page-ads";
 
 export const metadata: Metadata = {
   title: "مولد الكلمات المفتاحية ATS مجانًا | ATS Keyword Generator",
@@ -66,6 +67,7 @@ export default function AtsKeywordsPage() {
         </div>
       </section>
 
+      <ToolPageAd position="top" />
       <AdSlot id="ats-keywords-intro" className="container ats-page-ad ats-intro-ad" description="موضع غير مزعج أسفل مقدمة الأداة." />
       <section className="section ats-tool-section"><div className="container">
         <div className="ats-tool-intro"><div><span className="eyebrow">حلل الإعلان وقارن سيرتك</span><h2>حوّل وصف الوظيفة إلى <span className="text-gradient">خطوات واضحة.</span></h2><p>الصق الإعلان للبدء. تحليل السيرة الذاتية اختياري، وتتم معالجة الملفات والنصوص محليًا دون حفظها.</p></div><span className="ats-supported-files">PDF <span>·</span> DOCX <small>اختياري</small></span></div>
@@ -90,6 +92,7 @@ export default function AtsKeywordsPage() {
         <section className="ats-faq-section"><div className="section-heading"><span className="eyebrow">أسئلة شائعة</span><h2>استفسارات حول <span className="text-gradient">الكلمات المفتاحية.</span></h2></div><div className="faq-list">{faqs.map(([question, answer]) => <details className="faq-item" key={question}><summary>{question}<span className="faq-plus" aria-hidden="true" /></summary><p>{answer}</p></details>)}</div></section>
       </div></section>
       <AdSlot id="ats-keywords-bottom" className="container ats-page-ad ats-bottom-ad" description="موضع اختياري أسفل الصفحة." />
+      <ToolPageAd position="bottom" />
     </main>
     <SiteFooter />
   </>;

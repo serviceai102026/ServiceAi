@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CoverLetterGenerator } from "@/components/cover-letter-generator";
 import { AdSlot } from "@/components/ad-slot";
 import { SiteFooter, SiteHeader } from "@/components/site";
+import { ToolPageAd } from "@/components/tool-page-ads";
 
 export const metadata: Metadata = {
   title: "مولد رسالة التقديم المجاني | Cover Letter Generator",
@@ -64,6 +65,7 @@ export default function CoverLetterGeneratorPage() {
         </div>
       </section>
 
+      <ToolPageAd position="top" />
       <AdSlot id="cover-letter-intro" className="container cover-page-ad cover-intro-ad" description="موضع اختياري بعد مقدمة الأداة." />
       <section className="section cover-tool-section"><div className="container">
         <div className="cover-section-intro"><div><span className="eyebrow">خصّص رسالتك</span><h2>من معلوماتك إلى <span className="text-gradient">مسودة جاهزة للمراجعة.</span></h2><p>قدّم المعلومات التي تريد إبرازها؛ لا نضيف إلى الرسالة خبرات أو مهارات لم تدخلها.</p></div><span className="cover-lang-mark">5 لغات <b>·</b> PDF وDOCX</span></div>
@@ -87,6 +89,7 @@ export default function CoverLetterGeneratorPage() {
         <section className="cover-faq-section"><div className="section-heading"><span className="eyebrow">أسئلة شائعة</span><h2>إجابات لرسالة تقديم <span className="text-gradient">أوضح.</span></h2></div><div className="faq-list">{faqs.map(([question, answer]) => <details className="faq-item" key={question}><summary>{question}<span className="faq-plus" aria-hidden="true" /></summary><p>{answer}</p></details>)}</div></section>
       </div></section>
       <AdSlot id="cover-letter-bottom" className="container cover-page-ad cover-bottom-ad" description="موضع اختياري أسفل الصفحة." />
+      <ToolPageAd position="bottom" />
     </main>
     <SiteFooter />
   </>;

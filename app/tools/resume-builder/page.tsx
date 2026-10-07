@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ResumeBuilder } from "@/components/resume-builder";
 import { AdSlot } from "@/components/ad-slot";
 import { SiteFooter, SiteHeader } from "@/components/site";
+import { ToolPageAd } from "@/components/tool-page-ads";
 
 export const metadata: Metadata = {
   title: "منشئ السيرة الذاتية مجانًا | Resume Builder",
@@ -33,6 +34,7 @@ export default function ResumeBuilderPage() {
     <main id="main" className="resume-builder-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }} />
       <section className="page-hero resume-page-hero"><div className="container page-hero-inner"><div><span className="eyebrow"><span className="eyebrow-dot" />أداة مجانية — دون تسجيل</span><h1>أنشئ سيرتك الذاتية<br /><span className="text-gradient">بسهولة وثقة.</span></h1><p>أدخل خبراتك ومهاراتك، راجع المعاينة مباشرة، ثم احفظ سيرة ذاتية احترافية مناسبة للطباعة والتقديم للوظائف.</p><span className="resume-privacy-badge"><span aria-hidden="true">✓</span> بياناتك تبقى في متصفحك</span></div><div className="page-hero-art tool-hero-art" aria-hidden="true"><span className="hero-art-shape shape-tool-one">✦</span><span className="hero-art-shape shape-tool-two">✓</span><div className="tool-hero-sheet"><span /><span /><span /><span /><b>سيرتك الذاتية<br />بأسلوبك</b></div></div></div></section>
+      <ToolPageAd position="top" />
       <section className="section resume-tool-section"><div className="container"><div className="resume-editor-intro"><div><span className="eyebrow">خطوة بخطوة</span><h2>سيرتك الذاتية، <span className="text-gradient">كما تستحق.</span></h2><p>أكمل الحقول التي تنطبق عليك. يمكنك إضافة خبرات ومؤهلات متعددة وتحديث معاينتك في أي وقت.</p></div><span className="resume-free-mark"><span>✓</span> مجاني ودون حساب</span></div><ResumeBuilder /></div></section>
       <AdSlot id="resume-builder-guide" className="container resume-page-ad" description="موضع هادئ بين الأداة والمحتوى الإرشادي." />
       <section className="resume-seo-section"><div className="container">
@@ -46,6 +48,7 @@ export default function ResumeBuilderPage() {
         <section className="resume-seo-faq"><div className="section-heading"><span className="eyebrow">أسئلة شائعة</span><h2>إجابات مفيدة <span className="text-gradient">لبداية أسهل.</span></h2></div><div className="faq-list"><details className="faq-item"><summary>هل إنشاء السيرة الذاتية مجاني؟<span className="faq-plus" aria-hidden="true" /></summary><p>نعم، يمكن استخدام الأداة مجانًا دون اشتراك أو إنشاء حساب.</p></details><details className="faq-item"><summary>هل أحتاج إلى إنشاء حساب؟<span className="faq-plus" aria-hidden="true" /></summary><p>لا. الأداة متاحة لجميع الزوار، ولا تتطلب تسجيل الدخول.</p></details><details className="faq-item"><summary>هل تُحفظ بياناتي الشخصية؟<span className="faq-plus" aria-hidden="true" /></summary><p>لا. تعمل المعاينة على جهازك وتبقى البيانات في ذاكرة الصفحة فقط. لا تُرسل إلى قاعدة بيانات ولا تُحفظ بعد مغادرة الصفحة أو إعادة تحميلها.</p></details><details className="faq-item"><summary>كيف أنزّل السيرة الذاتية PDF؟<span className="faq-plus" aria-hidden="true" /></summary><p>اضغط زر التحميل واختر «حفظ بصيغة PDF» من نافذة الطباعة. اختر حجم A4، وأوقف رؤوس المتصفح وتذييلاته للحصول على نسخة نظيفة.</p></details><details className="faq-item"><summary>هل ستكتب الذكاء الاصطناعي النبذة أو يقترح المهارات؟<span className="faq-plus" aria-hidden="true" /></summary><p>أزرار ميزات الذكاء الاصطناعي معروضة كميزات مستقبلية قيد التطوير. لن تُرسل بياناتك إلى خدمة ذكاء اصطناعي في هذه النسخة.</p></details></div></section>
       </div>      </section>
       <AdSlot id="resume-builder-bottom" className="container resume-page-ad resume-page-ad-bottom" description="موضع اختياري أسفل الصفحة." />
+      <ToolPageAd position="bottom" />
     </main>
     <SiteFooter />
   </>;

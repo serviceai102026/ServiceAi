@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ResumeAnalyzer } from "@/components/resume-analyzer";
 import { AdSlot } from "@/components/ad-slot";
 import { SiteFooter, SiteHeader } from "@/components/site";
+import { ToolPageAd } from "@/components/tool-page-ads";
 
 export const metadata: Metadata = {
   title: "محلل السيرة الذاتية وATS مجانًا",
@@ -63,6 +64,7 @@ export default function ResumeAnalyzerPage() {
         </div>
       </section>
 
+      <ToolPageAd position="top" />
       <AdSlot id="resume-analyzer-intro" className="container analyzer-page-ad analyzer-intro-ad" description="موضع غير مزعج أسفل مقدمة الأداة." />
       <section className="section analyzer-tool-section"><div className="container">
         <div className="analyzer-tool-intro"><div><span className="eyebrow">ارفع، حلل، وحسّن</span><h2>ابدأ بخطوة <span className="text-gradient">واضحة.</span></h2><p>تعمل الأداة بقواعد فحص محلية للنص القابل للاستخراج، ولا تستبدل المراجعة البشرية أو تضمن قرار أنظمة التوظيف.</p></div><span className="analyzer-supported-files">PDF <span>·</span> DOCX</span></div>
@@ -84,6 +86,7 @@ export default function ResumeAnalyzerPage() {
         <section className="analyzer-faq-section"><div className="section-heading"><span className="eyebrow">أسئلة شائعة</span><h2>إجابات تساعدك على <span className="text-gradient">استخدام الفحص.</span></h2></div><div className="faq-list">{faqs.map(([question, answer]) => <details className="faq-item" key={question}><summary>{question}<span className="faq-plus" aria-hidden="true" /></summary><p>{answer}</p></details>)}</div></section>
       </div></section>
       <AdSlot id="resume-analyzer-bottom" className="container analyzer-page-ad analyzer-bottom-ad" description="موضع اختياري أسفل الصفحة." />
+      <ToolPageAd position="bottom" />
     </main>
     <SiteFooter />
   </>;

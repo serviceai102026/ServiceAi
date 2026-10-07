@@ -1,5 +1,5 @@
 import { ADS_CONFIG } from "@/config/ads";
-import { BlogAdsSettings } from "@/components/blog-ads-settings";
+import { AdsConfigEditor } from "@/components/ads-config-editor";
 import { SiteSettingsForm } from "@/components/site-settings-form";
 
 export function AdsManagerAdmin() {
@@ -16,7 +16,7 @@ export function AdsManagerAdmin() {
         </span>
       </div>
       <SiteSettingsForm />
-      <BlogAdsSettings />
+      <AdsConfigEditor />
     </div>
   );
 }
