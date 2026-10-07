@@ -8,26 +8,26 @@ export type AdsConfig = Record<AdsPlacement, {
 export const ADS_CONFIG = {
   "top": {
     "enabled": true,
-    "code": "<div style='background:#e0f2fe;border:2px dashed #0284c7;padding:30px;text-align:center;border-radius:12px'>إعلان TOP 1</div>"
+    "code": "<div style='background:#e0f2fe;border:2px solid #0284c7;padding:25px;text-align:center;border-radius:12px;'>\n  <div style='font-size:20px;font-weight:bold;color:#0369a1;'>📢 إعلانك هنا - TOP 1</div>\n  <div style='margin-top:8px;color:#0c4a6e;'>هذا الإعلان يظهر بنجاح، يمكنك الآن وضع كود AdSense الحقيقي</div>\n</div>"
   },
   "middle": {
     "enabled": true,
-    "code": "<div style='background:#fef9c3;border:2px dashed #ca8a04;padding:30px;text-align:center;border-radius:12px'>إعلان MIDDLE 2</div>"
+    "code": "<div style='background:#e0f2fe;border:2px solid #0284c7;padding:25px;text-align:center;border-radius:12px;'>\n  <div style='font-size:20px;font-weight:bold;color:#0369a1;'>📢 إعلانك هنا - TOP 1</div>\n  <div style='margin-top:8px;color:#0c4a6e;'>هذا الإعلان يظهر بنجاح، يمكنك الآن وضع كود AdSense الحقيقي</div>\n</div>"
   },
   "bottom": {
     "enabled": true,
-    "code": "<div style='background:#dcfce7;border:2px dashed #16a34a;padding:30px;text-align:center;border-radius:12px'>إعلان BOTTOM 3</div>"
+    "code": "<div style='background:#e0f2fe;border:2px solid #0284c7;padding:25px;text-align:center;border-radius:12px;'>\n  <div style='font-size:20px;font-weight:bold;color:#0369a1;'>📢 إعلانك هنا - TOP 1</div>\n  <div style='margin-top:8px;color:#0c4a6e;'>هذا الإعلان يظهر بنجاح، يمكنك الآن وضع كود AdSense الحقيقي</div>\n</div>"
   },
   "blog_top": {
     "enabled": true,
-    "code": "<div style='background:#e0f2fe;padding:20px;text-align:center'>إعلان مدونة</div>"
+    "code": "<div style='background:#e0f2fe;border:2px solid #0284c7;padding:25px;text-align:center;border-radius:12px;'>\n  <div style='font-size:20px;font-weight:bold;color:#0369a1;'>📢 إعلانك هنا - TOP 1</div>\n  <div style='margin-top:8px;color:#0c4a6e;'>هذا الإعلان يظهر بنجاح، يمكنك الآن وضع كود AdSense الحقيقي</div>\n</div>"
   },
   "blog_middle": {
     "enabled": true,
-    "code": ""
+    "code": "<div style='background:#e0f2fe;border:2px solid #0284c7;padding:25px;text-align:center;border-radius:12px;'>\n  <div style='font-size:20px;font-weight:bold;color:#0369a1;'>📢 إعلانك هنا - TOP 1</div>\n  <div style='margin-top:8px;color:#0c4a6e;'>هذا الإعلان يظهر بنجاح، يمكنك الآن وضع كود AdSense الحقيقي</div>\n</div>"
   },
   "blog_end": {
     "enabled": true,
-    "code": ""
+    "code": "<div style='background:#e0f2fe;border:2px solid #0284c7;padding:25px;text-align:center;border-radius:12px;'>\n  <div style='font-size:20px;font-weight:bold;color:#0369a1;'>📢 إعلانك هنا - TOP 1</div>\n  <div style='margin-top:8px;color:#0c4a6e;'>هذا الإعلان يظهر بنجاح، يمكنك الآن وضع كود AdSense الحقيقي</div>\n</div>"
   }
 } as const satisfies AdsConfig;
