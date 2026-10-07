@@ -15,19 +15,19 @@ export const ADS_CONFIG = {
     "code": "<div style='background:#fef9c3;border:2px dashed #ca8a04;padding:30px;text-align:center;border-radius:12px'>إعلان MIDDLE 2</div>"
   },
   "bottom": {
-    "enabled": false,
+    "enabled": true,
     "code": "<div style='background:#dcfce7;border:2px dashed #16a34a;padding:30px;text-align:center;border-radius:12px'>إعلان BOTTOM 3</div>"
   },
   "blog_top": {
-    "enabled": false,
+    "enabled": true,
     "code": "<div style='background:#e0f2fe;padding:20px;text-align:center'>إعلان مدونة</div>"
   },
   "blog_middle": {
-    "enabled": false,
+    "enabled": true,
     "code": ""
   },
   "blog_end": {
-    "enabled": false,
+    "enabled": true,
     "code": ""
   }
 } as const satisfies AdsConfig;
