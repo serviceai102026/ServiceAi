@@ -16,7 +16,7 @@ export function AdsManagerAdmin() {
           {SITE_ADS_CONFIG.enabled ? `${enabledPlacements} مواضع مفعّلة` : "الإعلانات متوقفة"}
         </span>
       </div>
-      <AdsConfigEditor />
+      <AdsConfigEditor showAdsenseId />
     </div>
   );
 }

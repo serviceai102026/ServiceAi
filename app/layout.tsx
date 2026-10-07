@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getSiteUrl } from "@/lib/site-url";
 import { SitePreferencesProvider } from "@/components/site-preferences-provider";
+import adsConfig from "../public/ads-config.json";
 import "../styles.css";
 import "./admin.css";
 
@@ -29,5 +30,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="ar" dir="rtl" data-scroll-behavior="smooth"><body><SitePreferencesProvider>{children}</SitePreferencesProvider></body></html>;
+  const adsenseId = adsConfig.adsenseId;
+  return <html lang="ar" dir="rtl" data-scroll-behavior="smooth"><head>{adsenseId && <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`} crossOrigin="anonymous"></script>}</head><body><SitePreferencesProvider>{children}</SitePreferencesProvider></body></html>;
 }

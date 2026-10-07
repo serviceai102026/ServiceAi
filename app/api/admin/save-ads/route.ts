@@ -45,6 +45,44 @@ export const ADS_CONFIG = ${JSON.stringify(adsConfig, null, 2)} as const satisfi
 `;
 }
 
+async function readGithubFileSha(apiUrl: string, headers: Record<string, string>, path: string): Promise<string | null> {
+  const response = await fetch(apiUrl, { headers, cache: "no-store" });
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    console.error(`GitHub could not read ${path}.`, response.status);
+    throw new Error(`تعذر قراءة ${path} من GitHub.`);
+  }
+
+  const file: unknown = await response.json();
+  if (!file || typeof file !== "object" || !("sha" in file) || typeof file.sha !== "string") {
+    console.error(`GitHub returned invalid metadata for ${path}.`);
+    throw new Error(`تعذر التحقق من نسخة ${path}.`);
+  }
+  return file.sha;
+}
+
+async function updateGithubFile(
+  apiUrl: string,
+  headers: Record<string, string>,
+  path: string,
+  content: string,
+  sha: string | null,
+) {
+  const response = await fetch(apiUrl, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({
+      message: "update ads config",
+      content: Buffer.from(content).toString("base64"),
+      ...(sha ? { sha } : {}),
+    }),
+  });
+  if (!response.ok) {
+    console.error(`GitHub could not update ${path}.`, response.status);
+    throw new Error(`تعذر حفظ ${path} في GitHub. تحقق من صلاحيات الرمز والمستودع.`);
+  }
+}
+
 export async function POST(request: Request) {
   const writeToken = process.env.ADS_CONFIG_WRITE_TOKEN;
   const githubToken = process.env.GITHUB_TOKEN;
@@ -70,11 +108,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "يجب إرسال إعدادات صحيحة بصيغة JSON." }, { status: 400 });
   }
 
-  if (!body || typeof body !== "object" || !("adsConfig" in body) || !isAdsConfig(body.adsConfig)) {
+  if (
+    !body
+    || typeof body !== "object"
+    || !("adsConfig" in body)
+    || !isAdsConfig(body.adsConfig)
+    || !("adsenseId" in body)
+    || typeof body.adsenseId !== "string"
+    || !/^ca-pub-\d{16}$/.test(body.adsenseId)
+  ) {
     return NextResponse.json({ error: "إعدادات الإعلانات المرسلة غير صالحة." }, { status: 400 });
   }
 
-  const apiUrl = `https://api.github.com/repos/${repository}/contents/lib/ads-config.ts`;
   const headers = {
     Accept: "application/vnd.github+json",
     Authorization: `Bearer ${githubToken}`,
@@ -83,41 +128,24 @@ export async function POST(request: Request) {
   };
 
   try {
-    const currentFileResponse = await fetch(apiUrl, { headers, cache: "no-store" });
-    if (!currentFileResponse.ok) {
-      console.error("GitHub could not read lib/ads-config.ts.", currentFileResponse.status);
-      return NextResponse.json({ error: "تعذر قراءة ملف إعدادات الإعلانات من GitHub." }, { status: 502 });
-    }
+    const tsPath = "lib/ads-config.ts";
+    const jsonPath = "public/ads-config.json";
+    const tsUrl = `https://api.github.com/repos/${repository}/contents/${tsPath}`;
+    const jsonUrl = `https://api.github.com/repos/${repository}/contents/${jsonPath}`;
+    const [tsSha, jsonSha] = await Promise.all([
+      readGithubFileSha(tsUrl, headers, tsPath),
+      readGithubFileSha(jsonUrl, headers, jsonPath),
+    ]);
+    const jsonContent = JSON.stringify({ adsenseId: body.adsenseId, ads: body.adsConfig }, null, 2);
 
-    const currentFile: unknown = await currentFileResponse.json();
-    if (
-      !currentFile
-      || typeof currentFile !== "object"
-      || !("sha" in currentFile)
-      || typeof currentFile.sha !== "string"
-    ) {
-      console.error("GitHub returned invalid file metadata for lib/ads-config.ts.");
-      return NextResponse.json({ error: "تعذر التحقق من نسخة ملف إعدادات الإعلانات." }, { status: 502 });
-    }
-
-    const updateResponse = await fetch(apiUrl, {
-      method: "PUT",
-      headers,
-      body: JSON.stringify({
-        message: "update ads config",
-        content: Buffer.from(createAdsConfigSource(body.adsConfig)).toString("base64"),
-        sha: currentFile.sha,
-      }),
-    });
-
-    if (!updateResponse.ok) {
-      console.error("GitHub could not update lib/ads-config.ts.", updateResponse.status);
-      return NextResponse.json({ error: "تعذر حفظ الإعدادات في GitHub. تحقق من صلاحيات الرمز والمستودع." }, { status: 502 });
-    }
+    await updateGithubFile(tsUrl, headers, tsPath, createAdsConfigSource(body.adsConfig), tsSha);
+    await updateGithubFile(jsonUrl, headers, jsonPath, jsonContent, jsonSha);
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Failed to save the ad configuration through GitHub.", error);
-    return NextResponse.json({ error: "حدث خطأ أثناء الاتصال بـGitHub لحفظ الإعدادات." }, { status: 502 });
+    return NextResponse.json({
+      error: error instanceof Error ? error.message : "حدث خطأ أثناء الاتصال بـGitHub لحفظ الإعدادات.",
+    }, { status: 502 });
   }
 }

@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { ADS_CONFIG, type AdsConfig, type AdsPlacement } from "@/lib/ads-config";
+import adsConfigFile from "@/public/ads-config.json";
 
 const placements: { id: AdsPlacement; title: string; description: string }[] = [
   { id: "top", title: "إعلانات الأدوات — أعلى الصفحة", description: "تظهر بعد عنوان كل أداة." },
@@ -12,8 +13,9 @@ const placements: { id: AdsPlacement; title: string; description: string }[] = [
   { id: "blog_end", title: "نهاية المقال", description: "تظهر قبل المقالات ذات الصلة." },
 ];
 
-export function AdsConfigEditor() {
+export function AdsConfigEditor({ showAdsenseId = false }: { showAdsenseId?: boolean }) {
   const [settings, setSettings] = useState<AdsConfig>(() => JSON.parse(JSON.stringify(ADS_CONFIG)) as AdsConfig);
+  const [adsenseId, setAdsenseId] = useState(adsConfigFile.adsenseId || "ca-pub-6730778512145187");
   const [writeToken, setWriteToken] = useState("");
   const [pending, setPending] = useState(false);
   const [notice, setNotice] = useState("");
@@ -46,7 +48,7 @@ export function AdsConfigEditor() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${writeToken.trim()}`,
         },
-        body: JSON.stringify({ adsConfig: settings }),
+        body: JSON.stringify({ adsConfig: settings, adsenseId }),
       });
       const result: unknown = await response.json();
       if (!response.ok) {
@@ -77,6 +79,20 @@ export function AdsConfigEditor() {
       {error && <p className="admin-alert" role="alert">{error}</p>}
       {notice && <p className="admin-success" role="status">{notice}</p>}
       <form className="site-settings-form" onSubmit={save}>
+        {showAdsenseId && (
+          <label className="site-settings-field" htmlFor="adsense-verification-id">
+            <span>كود تحقق AdSense</span>
+            <input
+              id="adsense-verification-id"
+              value={adsenseId}
+              onChange={(event) => { setAdsenseId(event.target.value.trim()); setError(""); setNotice(""); }}
+              placeholder="ca-pub-6730778512145187"
+              dir="ltr"
+              autoComplete="off"
+              disabled={pending}
+            />
+          </label>
+        )}
         {placements.map(({ id, title, description }) => (
           <article className="ad-placement-row blog-ad-row" key={id}>
             <div className="ad-placement-copy"><strong>{title}</strong><small>{description}</small></div>
