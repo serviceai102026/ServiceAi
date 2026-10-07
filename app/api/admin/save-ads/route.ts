@@ -1,0 +1,123 @@
+import { timingSafeEqual } from "node:crypto";
+import { NextResponse } from "next/server";
+import type { AdsConfig, AdsPlacement } from "@/lib/ads-config";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
+const placements: AdsPlacement[] = ["top", "middle", "bottom", "blog_top", "blog_middle", "blog_end"];
+
+function isAdsConfig(value: unknown): value is AdsConfig {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const config = value as Record<string, unknown>;
+  return placements.every((placement) => {
+    const setting = config[placement];
+    return Boolean(
+      setting
+      && typeof setting === "object"
+      && !Array.isArray(setting)
+      && "enabled" in setting
+      && typeof setting.enabled === "boolean"
+      && "code" in setting
+      && typeof setting.code === "string"
+      && setting.code.length <= 20000,
+    );
+  });
+}
+
+function hasValidWriteToken(request: Request, expectedToken: string): boolean {
+  const authorization = request.headers.get("authorization") ?? "";
+  const providedToken = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+  const provided = Buffer.from(providedToken);
+  const expected = Buffer.from(expectedToken);
+  return provided.length === expected.length && timingSafeEqual(provided, expected);
+}
+
+function createAdsConfigSource(adsConfig: AdsConfig): string {
+  return `export type AdsPlacement = "top" | "middle" | "bottom" | "blog_top" | "blog_middle" | "blog_end";
+
+export type AdsConfig = Record<AdsPlacement, {
+  enabled: boolean;
+  code: string;
+}>;
+
+export const ADS_CONFIG = ${JSON.stringify(adsConfig, null, 2)} as const satisfies AdsConfig;
+`;
+}
+
+export async function POST(request: Request) {
+  const writeToken = process.env.ADS_CONFIG_WRITE_TOKEN;
+  const githubToken = process.env.GITHUB_TOKEN;
+  const repository = process.env.GITHUB_REPO;
+
+  if (!writeToken || !githubToken || !repository) {
+    return NextResponse.json({ error: "خدمة حفظ الإعلانات غير مكتملة الإعداد على الخادم." }, { status: 503 });
+  }
+
+  if (!hasValidWriteToken(request, writeToken)) {
+    return NextResponse.json({ error: "رمز الكتابة غير صحيح." }, { status: 401 });
+  }
+
+  if (!/^[\w.-]+\/[\w.-]+$/.test(repository)) {
+    console.error("GITHUB_REPO must use the owner/repository format.");
+    return NextResponse.json({ error: "إعداد المستودع على الخادم غير صالح." }, { status: 503 });
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "يجب إرسال إعدادات صحيحة بصيغة JSON." }, { status: 400 });
+  }
+
+  if (!body || typeof body !== "object" || !("adsConfig" in body) || !isAdsConfig(body.adsConfig)) {
+    return NextResponse.json({ error: "إعدادات الإعلانات المرسلة غير صالحة." }, { status: 400 });
+  }
+
+  const apiUrl = `https://api.github.com/repos/${repository}/contents/lib/ads-config.ts`;
+  const headers = {
+    Accept: "application/vnd.github+json",
+    Authorization: `Bearer ${githubToken}`,
+    "X-GitHub-Api-Version": "2022-11-28",
+    "Content-Type": "application/json",
+  };
+
+  try {
+    const currentFileResponse = await fetch(apiUrl, { headers, cache: "no-store" });
+    if (!currentFileResponse.ok) {
+      console.error("GitHub could not read lib/ads-config.ts.", currentFileResponse.status);
+      return NextResponse.json({ error: "تعذر قراءة ملف إعدادات الإعلانات من GitHub." }, { status: 502 });
+    }
+
+    const currentFile: unknown = await currentFileResponse.json();
+    if (
+      !currentFile
+      || typeof currentFile !== "object"
+      || !("sha" in currentFile)
+      || typeof currentFile.sha !== "string"
+    ) {
+      console.error("GitHub returned invalid file metadata for lib/ads-config.ts.");
+      return NextResponse.json({ error: "تعذر التحقق من نسخة ملف إعدادات الإعلانات." }, { status: 502 });
+    }
+
+    const updateResponse = await fetch(apiUrl, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify({
+        message: "update ads config",
+        content: Buffer.from(createAdsConfigSource(body.adsConfig)).toString("base64"),
+        sha: currentFile.sha,
+      }),
+    });
+
+    if (!updateResponse.ok) {
+      console.error("GitHub could not update lib/ads-config.ts.", updateResponse.status);
+      return NextResponse.json({ error: "تعذر حفظ الإعدادات في GitHub. تحقق من صلاحيات الرمز والمستودع." }, { status: 502 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Failed to save the ad configuration through GitHub.", error);
+    return NextResponse.json({ error: "حدث خطأ أثناء الاتصال بـGitHub لحفظ الإعدادات." }, { status: 502 });
+  }
+}

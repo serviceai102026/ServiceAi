@@ -48,8 +48,8 @@ export function sanitizeBlogAdHtml(html: string): string {
       "hr", "i", "img", "ins", "li", "ol", "p", "pre", "small", "span", "strong", "u", "ul",
     ],
     allowedAttributes: {
-      a: ["href", "target", "rel", "title", "class"],
-      div: ["class", "id", "role", "aria-label"],
+      a: ["href", "target", "rel", "title", "class", "style"],
+      div: ["class", "id", "role", "aria-label", "style"],
       h1: ["class"],
       h2: ["class"],
       h3: ["class"],
@@ -59,6 +59,15 @@ export function sanitizeBlogAdHtml(html: string): string {
       li: ["class"],
       p: ["class"],
       span: ["class"],
+    },
+    allowedStyles: {
+      "*": {
+        background: [/^(#[\da-f]{3,8}|[a-z]+)$/i],
+        border: [/^\d+px\s+(solid|dashed|dotted)\s+#[\da-f]{3,8}$/i],
+        padding: [/^\d+px$/],
+        "text-align": [/^(center|left|right)$/],
+        "border-radius": [/^\d+px$/],
+      },
     },
     allowedSchemes: ["https", "http", "mailto"],
     transformTags: {

@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ADS_CONFIG as SITE_ADS_CONFIG, shouldShowAdsOnPathname } from "@/config/ads";
-import { ADS_CONFIG, readAdsConfigOverride, type AdsConfig } from "@/lib/ads-config";
+import { ADS_CONFIG } from "@/lib/ads-config";
 import { parseAdSenseSnippet } from "@/lib/blog-ads";
 import { loadAdSenseScript } from "@/lib/ads-manager";
 import { ADSENSE_SETTINGS_KEY, createDefaultAdsenseSettings, getAdsensePublisherId, readAdsenseSettings, type AdsenseSettings } from "@/lib/adsense-settings";
@@ -14,16 +14,13 @@ type PreferencesContextValue = {
   preferences: SitePreferences;
   adsenseSettings: AdsenseSettings;
   adsenseReady: boolean;
-  adsConfig: AdsConfig;
-  adsConfigReady: boolean;
 };
 
 const PreferencesContext = createContext<PreferencesContextValue>({
   preferences: createDefaultSitePreferences(),
   adsenseSettings: createDefaultAdsenseSettings(),
   adsenseReady: false,
-  adsConfig: ADS_CONFIG,
-  adsConfigReady: false,
+
 });
 
 export function useSitePreferences() {
@@ -35,8 +32,6 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
   const [preferences, setPreferences] = useState(createDefaultSitePreferences);
   const [readyPublisherId, setReadyPublisherId] = useState("");
   const [adsenseSettings, setAdsenseSettings] = useState(createDefaultAdsenseSettings);
-  const [adsConfig, setAdsConfig] = useState<AdsConfig>(ADS_CONFIG);
-  const [adsConfigReady, setAdsConfigReady] = useState(false);
 
   useEffect(() => {
     const loadPreferences = () => {
@@ -74,20 +69,6 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
     return () => {
       window.removeEventListener("adsense-settings-updated", onSettingsUpdated);
       window.removeEventListener("storage", onStorage);
-    };
-  }, []);
-
-  useEffect(() => {
-    const loadConfig = () => {
-      setAdsConfig(readAdsConfigOverride());
-      setAdsConfigReady(true);
-    };
-    loadConfig();
-    window.addEventListener("serviceai-ads-config-updated", loadConfig);
-    window.addEventListener("storage", loadConfig);
-    return () => {
-      window.removeEventListener("serviceai-ads-config-updated", loadConfig);
-      window.removeEventListener("storage", loadConfig);
     };
   }, []);
 
@@ -143,7 +124,7 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
   }, [pathname, preferences.branding.heroDescription]);
 
   const legacyPublisherId = getAdsensePublisherId(adsenseSettings);
-  const configuredPublisherIds = Object.values(adsConfig)
+  const configuredPublisherIds = Object.values(ADS_CONFIG)
     .filter(({ enabled, code }) => enabled && code.trim())
     .map(({ code }) => parseAdSenseSnippet(code, legacyPublisherId))
     .filter(({ slotId, publisherId }) => Boolean(slotId && publisherId))
@@ -177,8 +158,6 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
       preferences,
       adsenseSettings,
       adsenseReady: shouldLoadAds && readyPublisherId === publisherId,
-      adsConfig,
-      adsConfigReady,
     }}>
       {children}
     </PreferencesContext.Provider>

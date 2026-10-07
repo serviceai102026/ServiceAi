@@ -19,10 +19,16 @@
 - app/tools/[tool]/page.tsx = فيه 3 إعلانات
 - app/blog/[slug]/page.tsx = فيه 3 إعلانات
 
-## كيف تغير إعلان AdSense مستقبلا:
-1. افتح lib/ads-config.ts
-2. بدل محتوى code بالكود الجديد
-3. git add . && git commit && git push
-4. لا تستخدم أبدا data/ads.json
+## كيف تغير إعلان AdSense من لوحة التحكم:
+1. افتح إدارة الإعلانات أو إعدادات الموقع.
+2. عدّل الموضع أو فعّله، ثم أدخل رمز الكتابة السري.
+3. تحفظ الواجهة `lib/ads-config.ts` في GitHub، ويبدأ Vercel نشر الموقع تلقائيا.
+4. لا تستخدم أبدا `data/ads.json` أو تخزين الإعلانات في `localStorage`.
+
+## متطلبات GitHub وVercel:
+- `GITHUB_TOKEN`: رمز GitHub بصلاحية محتوى المستودع المطلوب.
+- `GITHUB_REPO`: اسم المستودع بصيغة `owner/repository`.
+- `ADS_CONFIG_WRITE_TOKEN`: رمز كتابة سري منفصل، مطلوب لحماية API الحفظ.
+- أضف المتغيرات في إعدادات بيئة Vercel، ثم أعد نشر الموقع بعد ضبطها.
 
 ## تاريخ الإصلاح: تم بنجاح - 3 مساحات ظاهرة

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArticleCard, SiteFooter, SiteHeader } from "@/components/site";
 import { LocalArticlePage } from "@/components/local-blog";
-import { AdSlot } from "@/components/ads/AdSlot";
+import AdSlot from "@/components/ads/AdSlot";
 import blogs from "@/data/blogs";
 import { splitArticleAroundAds } from "@/lib/blog-ads";
 import { sanitizeArticleHtml } from "@/lib/content";
@@ -65,9 +65,9 @@ function ArticleBody({ post }: { post: (typeof blogs)[number] }) {
       <p className="article-tags" aria-label="الكلمات المفتاحية">{post.tags.map((tag) => <span key={tag}>{tag}</span>)}</p>
       <div className="article-rich-content" dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(content.beforeTop) }} />
       <div className="article-rich-content" dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(content.betweenTopAndMiddle) }} />
-      {content.hasParagraphs && <AdSlot position="blog_middle" />}
+      <AdSlot position="middle" />
       <div className="article-rich-content" dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(content.afterMiddle) }} />
-      <AdSlot position="blog_end" />
+      <AdSlot position="bottom" />
       <section className="related-articles">
         <div className="section-heading"><span className="eyebrow">تابع القراءة</span><h2>مقالات <span className="text-gradient">ذات صلة.</span></h2></div>
         <div className="blog-grid">{blogs.filter((item) => item.slug !== post.slug && item.category === post.category).slice(0, 3).map((item) => <ArticleCard article={toArticleCard(item)} key={item.id} />)}</div>
@@ -87,9 +87,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <span className="eyebrow">{post.category}</span>
         <h1>{post.title}</h1>
         <p className="article-lead">{post.excerpt}</p>
+        <AdSlot position="top" />
         <Image className="article-cover-image" src={post.image} alt={post.title} width={1440} height={900} unoptimized />
       </header>
-      <AdSlot position="blog_top" />
       <ArticleBody post={post} />
     </div> : <LocalArticlePage slug={slug} />}
   </article></main><SiteFooter /></>;

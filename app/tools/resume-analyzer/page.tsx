@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ResumeAnalyzer } from "@/components/resume-analyzer";
 import { SiteFooter, SiteHeader } from "@/components/site";
-import { ToolPageAd } from "@/components/tool-page-ads";
+import AdSlot from "@/components/ads/AdSlot";
 
 export const metadata: Metadata = {
   title: "محلل السيرة الذاتية وATS مجانًا",
@@ -63,13 +63,13 @@ export default function ResumeAnalyzerPage() {
         </div>
       </section>
 
-      <ToolPageAd position="top" />
+      <AdSlot position="top" />
       <section className="section analyzer-tool-section"><div className="container">
         <div className="analyzer-tool-intro"><div><span className="eyebrow">ارفع، حلل، وحسّن</span><h2>ابدأ بخطوة <span className="text-gradient">واضحة.</span></h2><p>تعمل الأداة بقواعد فحص محلية للنص القابل للاستخراج، ولا تستبدل المراجعة البشرية أو تضمن قرار أنظمة التوظيف.</p></div><span className="analyzer-supported-files">PDF <span>·</span> DOCX</span></div>
         <ResumeAnalyzer />
       </div></section>
 
-      <ToolPageAd position="middle" />
+      <AdSlot position="middle" />
       <section className="analyzer-seo-section"><div className="container">
         <div className="section-heading centered"><span className="eyebrow">دليل أنظمة التوظيف</span><h2>افهم ATS، <span className="text-gradient">وقدّم سيرتك بوضوح.</span></h2><p>تعرّف على طريقة قراءة أنظمة تتبع المتقدمين للسير الذاتية، وما يمكنك فعله لتحسين وضوح مستندك وملاءمته للوظيفة.</p></div>
         <div className="analyzer-guide-grid">
@@ -80,7 +80,7 @@ export default function ResumeAnalyzerPage() {
           <article className="analyzer-guide-card"><span>05</span><h2>أهم الكلمات المفتاحية في السيرة</h2><p>تتغير الكلمات المناسبة حسب الوظيفة. قد تشمل المسمى الوظيفي، والمهارات التقنية، والبرامج، والشهادات، والمنهجيات المذكورة في الإعلان. اذكر المصطلحات التي تنطبق على خبرتك ضمن سياقها؛ لا تضف كلمات لمجرد رفع نتيجة المطابقة.</p><div className="analyzer-example-keywords"><span>المسمى الوظيفي</span><span>مهارات وأدوات</span><span>شهادات مهنية</span><span>منهجيات</span></div></article>
           <article className="analyzer-guide-card"><span>06</span><h2>أخطاء ينبغي تجنبها</h2><ul><li>استخدام صور أو جداول معقدة لعرض معلومات أساسية.</li><li>إضافة كلمات مفتاحية لا تعبّر عن خبرتك.</li><li>ترك تواريخ أو معلومات اتصال ناقصة.</li><li>استخدام أوصاف عامة بلا أمثلة أو نتائج دقيقة.</li><li>الاعتماد على درجة آلية كضمان للقبول.</li></ul></article>
         </div>
-        <ToolPageAd position="bottom" />
+        <AdSlot position="bottom" />
         <section className="analyzer-faq-section"><div className="section-heading"><span className="eyebrow">أسئلة شائعة</span><h2>إجابات تساعدك على <span className="text-gradient">استخدام الفحص.</span></h2></div><div className="faq-list">{faqs.map(([question, answer]) => <details className="faq-item" key={question}><summary>{question}<span className="faq-plus" aria-hidden="true" /></summary><p>{answer}</p></details>)}</div></section>
       </div></section>
     </main>

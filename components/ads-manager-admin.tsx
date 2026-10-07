@@ -1,6 +1,5 @@
 import { ADS_CONFIG as SITE_ADS_CONFIG } from "@/config/ads";
 import { AdsConfigEditor } from "@/components/ads-config-editor";
-import { SiteSettingsForm } from "@/components/site-settings-form";
 import { ADS_CONFIG } from "@/lib/ads-config";
 
 export function AdsManagerAdmin() {
@@ -9,15 +8,14 @@ export function AdsManagerAdmin() {
     <div className="admin-page ads-manager-page">
       <div className="admin-page-heading">
         <div>
-          <span className="admin-kicker">تحكم محلي بدون Firebase</span>
+          <span className="admin-kicker">إعدادات الإعلانات المنشورة</span>
           <h1>إدارة إعلانات Google AdSense</h1>
-          <p>عدّل معرّف الناشر ومواضع الإعلانات؛ تُحفظ الإعدادات في هذا المتصفح.</p>
+          <p>مصدر الإعلانات هو ملف الإعدادات المنشور، وتظهر التغييرات لجميع الزوار بعد إعادة النشر.</p>
         </div>
         <span className={`admin-status ${SITE_ADS_CONFIG.enabled && enabledPlacements ? "status-published" : "status-draft"}`}>
           {SITE_ADS_CONFIG.enabled ? `${enabledPlacements} مواضع مفعّلة` : "الإعلانات متوقفة"}
         </span>
       </div>
-      <SiteSettingsForm />
       <AdsConfigEditor />
     </div>
   );

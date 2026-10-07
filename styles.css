@@ -246,6 +246,9 @@ h1, h2, h3, p { margin-block-start: 0; }
 .adsense-slot { display: block; min-height: 100px; max-width: 100%; overflow: hidden; }
 .adsense-slot .adsbygoogle { min-height: 90px; }
 .blog-ad-slot { display: block; max-width: 100%; margin: 28px auto; overflow: hidden; text-align: center; }
+.blog-ad-slot.adsense-slot { min-height: 100px; }
+.blog-ad-slot .adsbygoogle { display: block; min-height: 90px; }
+.ad-config-warning { padding: 16px; border: 1px solid #f4d08a; border-radius: 10px; background: #fffbeb; color: #805b13; font-size: 13px; line-height: 1.7; text-align: center; }
 .tool-page-ad { width: min(100% - 40px, 1120px); }
 .ad-future-placeholder { display: grid; min-height: 96px; place-items: center; margin: 24px auto; border: 1px dashed #cbd5e1; border-radius: 12px; background: #f1f5f9; color: #64748b; font-size: 13px; }
 .career-guide-section { padding: 56px 0 84px; background: linear-gradient(180deg, #f6f9ff 0%, #fff 100%); }
