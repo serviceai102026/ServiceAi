@@ -9,8 +9,8 @@ service cloud.firestore {
     }
 
     match /settings/{settingId} {
-      allow read: if settingId == "social";
-      allow create, update, delete: if settingId == "social"
+      allow read: if settingId in ["social", "ads"];
+      allow create, update, delete: if settingId in ["social", "ads"]
         && request.auth != null
         && request.auth.uid == "CLBHE7rmmARH6V9XpCXnkZrHxju2";
     }
