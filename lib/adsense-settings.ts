@@ -20,6 +20,21 @@ export type AdsenseSettings = {
   slots: AdsenseSlotSetting[];
 };
 
+export function getAdsenseSlotId(value: string): string {
+  if (/^\d+$/.test(value.trim())) return value.trim();
+  return value.match(/\bdata-ad-slot\s*=\s*["'](\d+)["']/i)?.[1] ?? "";
+}
+
+export function getAdsensePublisherId(settings: AdsenseSettings): string {
+  if (settings.publisherId) return settings.publisherId;
+  for (const slot of settings.slots) {
+    if (!slot.enabled) continue;
+    const publisherId = slot.slot.match(/\bdata-ad-client\s*=\s*["'](ca-pub-\d+)["']/i)?.[1];
+    if (publisherId) return publisherId;
+  }
+  return "";
+}
+
 export function createDefaultAdsenseSettings(): AdsenseSettings {
   return {
     publisherId: "",
@@ -67,7 +82,7 @@ export function parseAdsenseSettings(stored: string | null): AdsenseSettings {
     if (typeof savedSlot.slot !== "string" || typeof savedSlot.enabled !== "boolean") {
       throw new Error(`إعداد موضع الإعلان «${slot.position}» غير صالح.`);
     }
-    return { ...slot, slot: savedSlot.slot, enabled: savedSlot.enabled };
+    return { ...slot, slot: savedSlot.slot.slice(0, 20000), enabled: savedSlot.enabled };
   });
 
   return { publisherId: value.publisherId, slots };

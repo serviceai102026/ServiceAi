@@ -82,18 +82,9 @@ function AdsenseSettingsEditor({
       onNotice("أدخل معرّف ناشر صحيحًا يبدأ بـ ca-pub- ويتبعه 16 رقمًا.");
       return;
     }
-    const invalidSlot = settings.slots.find((slot) => !/^[0-9]{0,32}$/.test(slot.slot));
-    if (invalidSlot) {
-      onNotice(`رقم الوحدة الإعلانية غير صالح في الموضع «${invalidSlot.position}».`);
-      return;
-    }
     const missingSlot = settings.slots.find((slot) => slot.enabled && !slot.slot);
     if (missingSlot) {
-      onNotice(`أدخل رقم الوحدة للموضع «${missingSlot.position}» أو أوقف تفعيله.`);
-      return;
-    }
-    if (settings.slots.some((slot) => slot.enabled) && !settings.publisherId) {
-      onNotice("أدخل معرّف الناشر قبل تفعيل أي إعلان.");
+      onNotice(`أدخل رقم الوحدة أو كود الإعلان للموضع «${missingSlot.position}» أو أوقف تفعيله.`);
       return;
     }
 
@@ -123,7 +114,7 @@ function AdsenseSettingsEditor({
             autoComplete="off"
           />
         </label>
-        <p className="adsense-admin-help">أدخل رقم الوحدة الإعلانية لكل موضع، وفعّل المربع لعرض الإعلان. يتم حفظ الإعدادات تحت المفتاح adsense_settings في localStorage.</p>
+        <p className="adsense-admin-help">أدخل رقم الوحدة أو كود HTML، وفعّل المربع لعرض الإعلان. تُنقّى أكواد HTML قبل عرضها لمنع الشيفرات الخطرة. يتم حفظ الإعدادات تحت المفتاح adsense_settings في localStorage.</p>
         <div className="ad-placement-list">
           {ADSENSE_POSITIONS.map((position) => {
             const slot = settings.slots.find((item) => item.id === position.id);
@@ -141,14 +132,13 @@ function AdsenseSettingsEditor({
                 </label>
                 <label className="site-settings-field ad-slot-input" htmlFor={`slot-${slot.id}`}>
                   <span>رقم الوحدة (Ad Slot)</span>
-                  <input
+                  <textarea
                     id={`slot-${slot.id}`}
-                    inputMode="numeric"
-                    pattern="[0-9]{1,32}"
-                    maxLength={32}
+                    rows={4}
+                    maxLength={20000}
                     value={slot.slot}
-                    onChange={(event) => updateSlot(slot.id, { slot: event.target.value.trim() })}
-                    placeholder="مثال: 1234567890"
+                    onChange={(event) => updateSlot(slot.id, { slot: event.target.value })}
+                    placeholder="حط رقم الوحدة 1234567890 أو كود HTML كامل للتجربة"
                     dir="ltr"
                   />
                 </label>

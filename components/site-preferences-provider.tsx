@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ADS_CONFIG, shouldShowAdsOnPathname } from "@/config/ads";
-import { ADSENSE_SETTINGS_KEY, createDefaultAdsenseSettings, readAdsenseSettings, type AdsenseSettings } from "@/lib/adsense-settings";
+import { ADSENSE_SETTINGS_KEY, createDefaultAdsenseSettings, getAdsensePublisherId, getAdsenseSlotId, readAdsenseSettings, type AdsenseSettings } from "@/lib/adsense-settings";
 import { createDefaultSitePreferences, parseSitePreferences, type SitePreferences } from "@/lib/site-preferences";
 import { get, LOCAL_DB_KEYS, subscribe } from "@/lib/localDB";
 
@@ -119,23 +119,24 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
     description.content = preferences.branding.heroDescription;
   }, [pathname, preferences.branding.heroDescription]);
 
+  const publisherId = getAdsensePublisherId(adsenseSettings);
   const shouldLoadAds = Boolean(
     ADS_CONFIG.enabled
     && shouldShowAdsOnPathname(pathname || "/")
-    && adsenseSettings.publisherId
-    && adsenseSettings.slots.some((slot) => slot.enabled && slot.slot),
+    && publisherId
+    && adsenseSettings.slots.some((slot) => slot.enabled && getAdsenseSlotId(slot.slot)),
   );
 
   useEffect(() => {
     const scriptId = "google-adsense-script";
     const existingScript = document.head.querySelector<HTMLScriptElement>(`#${scriptId}`);
 
-    if (!shouldLoadAds || !adsenseSettings.publisherId || !navigator.onLine) {
+    if (!shouldLoadAds || !publisherId || !navigator.onLine) {
       existingScript?.remove();
       return;
     }
 
-    const scriptSrc = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(adsenseSettings.publisherId)}`;
+    const scriptSrc = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(publisherId)}`;
     if (existingScript?.src === scriptSrc) {
       existingScript.dataset.loaded = "true";
       return;
@@ -149,7 +150,7 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
     script.src = scriptSrc;
     script.onload = () => {
       script.dataset.loaded = "true";
-      setReadyPublisherId(adsenseSettings.publisherId);
+      setReadyPublisherId(publisherId);
     };
     script.onerror = () => {
       setReadyPublisherId("");
@@ -161,13 +162,13 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
       script.onload = null;
       script.onerror = null;
     };
-  }, [adsenseSettings.publisherId, pathname, shouldLoadAds]);
+  }, [pathname, publisherId, shouldLoadAds]);
 
   return (
     <PreferencesContext.Provider value={{
       preferences,
       adsenseSettings,
-      adsenseReady: shouldLoadAds && readyPublisherId === adsenseSettings.publisherId,
+      adsenseReady: shouldLoadAds && readyPublisherId === publisherId,
     }}>
       {children}
     </PreferencesContext.Provider>
