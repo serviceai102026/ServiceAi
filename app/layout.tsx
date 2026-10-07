@@ -4,7 +4,7 @@ import { SitePreferencesProvider } from "@/components/site-preferences-provider"
 import adsConfig from "../public/ads-config.json";
 import "../styles.css";
 import "./admin.css";
-
+import { Analytics } from "@vercel/analytics/next";
 const baseMetadata: Metadata = {
   metadataBase: getSiteUrl(),
   title: { default: "ServiceAI — خطوتك الذكية نحو وظيفة أحلامك", template: "%s — ServiceAI" },
@@ -31,5 +31,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const adsenseId = adsConfig.adsenseId;
-  return <html lang="ar" dir="rtl" data-scroll-behavior="smooth"><head>{adsenseId && <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`} crossOrigin="anonymous"></script>}</head><body><SitePreferencesProvider>{children}</SitePreferencesProvider></body></html>;
+  return (
+    <html lang="ar" dir="rtl" data-scroll-behavior="smooth">
+      <body>
+        {children}
+        <Analytics />
+      </body>
+    </html>
+  );
 }
