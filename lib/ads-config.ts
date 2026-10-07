@@ -8,26 +8,26 @@ export type AdsConfig = Record<AdsPlacement, {
 export const ADS_CONFIG = {
   "top": {
     "enabled": true,
-    "code": "<div style='background:#e0f2fe;border:2px solid #0284c7;padding:25px;text-align:center;border-radius:12px;'>\n  <div style='font-size:20px;font-weight:bold;color:#0369a1;'>📢 إعلانك هنا - TOP 1</div>\n  <div style='margin-top:8px;color:#0c4a6e;'>هذا الإعلان يظهر بنجاح، يمكنك الآن وضع كود AdSense الحقيقي</div>\n</div>"
+    "code": "<div style=\"text-align:center; margin:20px 0;\">\n  <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXX\" crossorigin=\"anonymous\"></script>\n  <ins class=\"adsbygoogle\"\n       style=\"display:block\"\n       data-ad-client=\"ca-pub-XXXXXXXXXXXXXX\"\n       data-ad-slot=\"1234567890\"\n       data-ad-format=\"auto\"\n       data-full-width-responsive=\"true\"></ins>\n  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>\n</div>"
   },
   "middle": {
     "enabled": true,
-    "code": "<div style='background:#e0f2fe;border:2px solid #0284c7;padding:25px;text-align:center;border-radius:12px;'>\n  <div style='font-size:20px;font-weight:bold;color:#0369a1;'>📢 إعلانك هنا - TOP 1</div>\n  <div style='margin-top:8px;color:#0c4a6e;'>هذا الإعلان يظهر بنجاح، يمكنك الآن وضع كود AdSense الحقيقي</div>\n</div>"
+    "code": "<div style=\"text-align:center; margin:20px 0;\">\n  <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXX\" crossorigin=\"anonymous\"></script>\n  <ins class=\"adsbygoogle\"\n       style=\"display:block\"\n       data-ad-client=\"ca-pub-XXXXXXXXXXXXXX\"\n       data-ad-slot=\"1234567890\"\n       data-ad-format=\"auto\"\n       data-full-width-responsive=\"true\"></ins>\n  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>\n</div>"
   },
   "bottom": {
     "enabled": true,
-    "code": "<div style='background:#e0f2fe;border:2px solid #0284c7;padding:25px;text-align:center;border-radius:12px;'>\n  <div style='font-size:20px;font-weight:bold;color:#0369a1;'>📢 إعلانك هنا - TOP 1</div>\n  <div style='margin-top:8px;color:#0c4a6e;'>هذا الإعلان يظهر بنجاح، يمكنك الآن وضع كود AdSense الحقيقي</div>\n</div>"
+    "code": "<div style=\"text-align:center; margin:20px 0;\">\n  <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXX\" crossorigin=\"anonymous\"></script>\n  <ins class=\"adsbygoogle\"\n       style=\"display:block\"\n       data-ad-client=\"ca-pub-XXXXXXXXXXXXXX\"\n       data-ad-slot=\"1234567890\"\n       data-ad-format=\"auto\"\n       data-full-width-responsive=\"true\"></ins>\n  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>\n</div>"
   },
   "blog_top": {
     "enabled": true,
-    "code": "<div style='background:#e0f2fe;border:2px solid #0284c7;padding:25px;text-align:center;border-radius:12px;'>\n  <div style='font-size:20px;font-weight:bold;color:#0369a1;'>📢 إعلانك هنا - TOP 1</div>\n  <div style='margin-top:8px;color:#0c4a6e;'>هذا الإعلان يظهر بنجاح، يمكنك الآن وضع كود AdSense الحقيقي</div>\n</div>"
+    "code": "<div style=\"text-align:center; margin:20px 0;\">\n  <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXX\" crossorigin=\"anonymous\"></script>\n  <ins class=\"adsbygoogle\"\n       style=\"display:block\"\n       data-ad-client=\"ca-pub-XXXXXXXXXXXXXX\"\n       data-ad-slot=\"1234567890\"\n       data-ad-format=\"auto\"\n       data-full-width-responsive=\"true\"></ins>\n  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>\n</div>"
   },
   "blog_middle": {
     "enabled": true,
-    "code": "<div style='background:#e0f2fe;border:2px solid #0284c7;padding:25px;text-align:center;border-radius:12px;'>\n  <div style='font-size:20px;font-weight:bold;color:#0369a1;'>📢 إعلانك هنا - TOP 1</div>\n  <div style='margin-top:8px;color:#0c4a6e;'>هذا الإعلان يظهر بنجاح، يمكنك الآن وضع كود AdSense الحقيقي</div>\n</div>"
+    "code": "<div style=\"text-align:center; margin:20px 0;\">\n  <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXX\" crossorigin=\"anonymous\"></script>\n  <ins class=\"adsbygoogle\"\n       style=\"display:block\"\n       data-ad-client=\"ca-pub-XXXXXXXXXXXXXX\"\n       data-ad-slot=\"1234567890\"\n       data-ad-format=\"auto\"\n       data-full-width-responsive=\"true\"></ins>\n  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>\n</div>"
   },
   "blog_end": {
     "enabled": true,
-    "code": "<div style='background:#e0f2fe;border:2px solid #0284c7;padding:25px;text-align:center;border-radius:12px;'>\n  <div style='font-size:20px;font-weight:bold;color:#0369a1;'>📢 إعلانك هنا - TOP 1</div>\n  <div style='margin-top:8px;color:#0c4a6e;'>هذا الإعلان يظهر بنجاح، يمكنك الآن وضع كود AdSense الحقيقي</div>\n</div>"
+    "code": "<div style=\"text-align:center; margin:20px 0;\">\n  <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXX\" crossorigin=\"anonymous\"></script>\n  <ins class=\"adsbygoogle\"\n       style=\"display:block\"\n       data-ad-client=\"ca-pub-XXXXXXXXXXXXXX\"\n       data-ad-slot=\"1234567890\"\n       data-ad-format=\"auto\"\n       data-full-width-responsive=\"true\"></ins>\n  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>\n</div>"
   }
 } as const satisfies AdsConfig;
