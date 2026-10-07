@@ -34,7 +34,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="ar" dir="rtl" data-scroll-behavior="smooth">
       <body>
-        {children}
+        <SitePreferencesProvider>
+          {children}
+        </SitePreferencesProvider>
         <Analytics />
       </body>
     </html>
