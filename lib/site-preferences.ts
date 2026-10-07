@@ -32,6 +32,16 @@ export type SocialPreferences = {
   youtube: string;
 };
 
+export const DEFAULT_SOCIAL_LINKS: SocialPreferences = {
+  facebook: "",
+  instagram: "",
+  youtube: "",
+  x: "",
+  tiktok: "",
+  whatsapp: "",
+  linkedin: "",
+};
+
 export type SiteBranding = {
   siteName: string;
   logoMark: string;
@@ -150,7 +160,7 @@ export function createDefaultSitePreferences(): SitePreferences {
   return {
     adsenseClient: "",
     adSlots: Object.fromEntries(AD_PLACEMENTS.map(({ id }) => [id, { enabled: false, slotId: "" }])) as Record<AdPlacementId, AdSlotPreference>,
-    socialLinks: { whatsapp: "", instagram: "", facebook: "", tiktok: "", x: "", linkedin: "", youtube: "" },
+    socialLinks: { ...DEFAULT_SOCIAL_LINKS },
     branding: { ...DEFAULT_SITE_BRANDING },
     homeSlider: DEFAULT_HOME_SLIDES.map((slide) => ({ ...slide })),
   };
@@ -180,12 +190,11 @@ export function parseSitePreferences(row: Record<string, unknown>): SitePreferen
     }];
   })) as Record<AdPlacementId, AdSlotPreference>;
 
-  const parsedSocials = Object.fromEntries(Object.keys(defaults.socialLinks).map((key) => [
-    key,
-    typeof (key === "whatsapp" ? contact.whatsapp ?? socialLinks[key] : socialLinks[key]) === "string"
-      ? (key === "whatsapp" ? contact.whatsapp ?? socialLinks[key] : socialLinks[key])
-      : "",
-  ])) as SocialPreferences;
+  const parsedSocials = Object.fromEntries(Object.keys(defaults.socialLinks).map((key) => {
+    const value = key === "whatsapp" ? contact.whatsapp ?? socialLinks[key] : socialLinks[key];
+    const fallback = defaults.socialLinks[key as keyof SocialPreferences];
+    return [key, typeof value === "string" && value.trim() ? value : fallback];
+  })) as SocialPreferences;
   const brandingValue = (key: keyof SiteBranding) => {
     const value = branding[key];
     return typeof value === "string" ? value : DEFAULT_SITE_BRANDING[key];

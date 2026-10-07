@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useSyncExternalStore, type FormEvent } from "react";
-import { parseSitePreferences } from "@/lib/site-preferences";
-import { get, LOCAL_DB_KEYS, subscribe, set } from "@/lib/localDB";
+import { useEffect, useState, type FormEvent } from "react";
+import { createDefaultSitePreferences } from "@/lib/site-preferences";
 
-type SocialLinks = ReturnType<typeof parseSitePreferences>["socialLinks"];
+type SocialLinks = ReturnType<typeof createDefaultSitePreferences>["socialLinks"];
 
 const fields: { key: keyof SocialLinks; label: string; placeholder: string }[] = [
   { key: "facebook", label: "Facebook", placeholder: "https://facebook.com/your-page" },
@@ -16,70 +15,57 @@ const fields: { key: keyof SocialLinks; label: string; placeholder: string }[] =
   { key: "x", label: "X", placeholder: "https://x.com/your-account" },
 ];
 
-function subscribePreferences(onChange: () => void) {
-  return subscribe((key) => {
-    if (key === LOCAL_DB_KEYS.preferences) onChange();
-  });
-}
-
-function getPreferencesSnapshot() {
-  return window.localStorage.getItem("serviceai:preferences") ?? "";
-}
-
-function getServerPreferencesSnapshot() {
-  return "";
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+function isSocialLinks(value: unknown): value is SocialLinks {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const links = value as Record<string, unknown>;
+  return fields.every(({ key }) => typeof links[key] === "string");
 }
 
 export function AdminSocialSettings() {
-  const snapshot = useSyncExternalStore(subscribePreferences, getPreferencesSnapshot, getServerPreferencesSnapshot);
-  let links: SocialLinks = parseSitePreferences({}).socialLinks;
-  let loadError = "";
-  try {
-    const stored: unknown = snapshot ? JSON.parse(snapshot) : {};
-    if (!isRecord(stored)) {
-      throw new Error("Stored preferences must be an object.");
-    }
-    links = parseSitePreferences(stored).socialLinks;
-  } catch (error) {
-    console.error("Could not load social links from local storage.", error);
-    loadError = "تعذر قراءة روابط التواصل المحفوظة. صحح بيانات التخزين المحلي قبل حفظ روابط جديدة.";
-  }
+  const [links, setLinks] = useState<SocialLinks>(() => createDefaultSitePreferences().socialLinks);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [ready, setReady] = useState(false);
+  const [pending, setPending] = useState(false);
   const [notice, setNotice] = useState("");
+  const [error, setError] = useState("");
 
-  return (
-    <div className="admin-page">
-      <div className="admin-page-heading">
-        <div><span className="admin-kicker">إعدادات التذييل</span><h1>التحكم في مواقع التواصل الاجتماعي</h1><p>تُحفظ الروابط في هذا المتصفح وتظهر في الفوتر دون Firebase.</p></div>
-      </div>
-      {loadError && <p className="admin-alert" role="alert">{loadError}</p>}
-      {notice && <p className={notice.startsWith("تعذر") ? "admin-alert" : "admin-success"} role={notice.startsWith("تعذر") ? "alert" : "status"}>{notice}</p>}
-      <SocialLinksEditor key={snapshot} initialLinks={links} onNotice={setNotice} />
-    </div>
-  );
-}
+  useEffect(() => {
+    let active = true;
+    async function loadLinks() {
+      try {
+        const response = await fetch("/api/social-links", { cache: "no-store" });
+        const result: unknown = await response.json();
+        if (!response.ok || !isSocialLinks(result)) {
+          const message = result && typeof result === "object" && "error" in result && typeof result.error === "string"
+            ? result.error
+            : "تعذر تحميل روابط التواصل المشتركة.";
+          throw new Error(message);
+        }
+        if (active) setLinks(result);
+      } catch (loadError) {
+        console.error("Could not load shared social links in admin.", loadError);
+        if (active) setError(loadError instanceof Error ? loadError.message : "تعذر تحميل روابط التواصل.");
+      } finally {
+        if (active) setReady(true);
+      }
+    }
+    void loadLinks();
+    return () => { active = false; };
+  }, []);
 
-function SocialLinksEditor({
-  initialLinks,
-  onNotice,
-}: {
-  initialLinks: SocialLinks;
-  onNotice: (message: string) => void;
-}) {
-  const [links, setLinks] = useState(initialLinks);
-
-  function save(event: FormEvent<HTMLFormElement>) {
+  async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setNotice("");
+    setError("");
+
     for (const field of fields) {
       const value = links[field.key].trim();
       if (!value) continue;
       if (field.key === "whatsapp" && !/^https?:\/\//i.test(value)) {
         const number = value.replace(/\D/g, "");
         if (number.length < 7 || number.length > 15) {
-          onNotice("أدخل رقم WhatsApp صحيحًا مع رمز الدولة أو رابطًا كاملًا.");
+          setError("أدخل رقم WhatsApp صحيحًا مع رمز الدولة أو رابطًا كاملًا.");
           return;
         }
         continue;
@@ -87,53 +73,90 @@ function SocialLinksEditor({
       try {
         const url = new URL(value);
         if ((url.protocol !== "https:" && url.protocol !== "http:") || !url.hostname || url.username || url.password) {
-          onNotice(`رابط ${field.label} غير صالح؛ استخدم رابطًا يبدأ بـ https://.`);
+          setError(`رابط ${field.label} غير صالح؛ استخدم رابطًا يبدأ بـ https://.`);
           return;
         }
       } catch {
-        onNotice(`رابط ${field.label} غير صالح؛ استخدم رابطًا يبدأ بـ https://.`);
+        setError(`رابط ${field.label} غير صالح؛ استخدم رابطًا يبدأ بـ https://.`);
         return;
       }
     }
+    if (!email.trim() || !password) {
+      setError("أدخل بريد المدير وكلمة المرور لتأكيد الحفظ على الخادم.");
+      return;
+    }
+
+    setPending(true);
     try {
-      set(LOCAL_DB_KEYS.preferences, {
-        ...get<Record<string, unknown>>(LOCAL_DB_KEYS.preferences, {}),
-        social_links: links,
+      const response = await fetch("/api/social-links", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ socialLinks: links, email, password }),
       });
-      onNotice("تم حفظ روابط التواصل بنجاح ✅");
-    } catch (error) {
-      console.error("Could not save social links to local storage.", error);
-      onNotice(error instanceof Error ? `تعذر حفظ الروابط: ${error.message}` : "تعذر حفظ روابط التواصل.");
+      const result: unknown = await response.json();
+      if (!response.ok) {
+        const message = result && typeof result === "object" && "error" in result && typeof result.error === "string"
+          ? result.error
+          : "تعذر حفظ روابط التواصل.";
+        throw new Error(message);
+      }
+      setPassword("");
+      window.dispatchEvent(new Event("serviceai-social-links-updated"));
+      setNotice("تم حفظ روابط التواصل، وأصبحت متاحة لجميع الزوار ✅");
+    } catch (saveError) {
+      console.error("Could not save shared social links.", saveError);
+      setError(saveError instanceof Error ? saveError.message : "تعذر حفظ روابط التواصل.");
+    } finally {
+      setPending(false);
     }
   }
 
   return (
-    <form className="site-settings-form" onSubmit={save}>
-      <section className="admin-panel-card site-settings-card">
-        <div className="admin-card-heading"><div><h2>روابط التواصل</h2><p>أدخل الرابط أو الرقم. الحقول الفارغة لا تظهر في الفوتر.</p></div></div>
-        <div className="social-settings-grid">
-          {fields.map((field) => (
-            <label className="site-settings-field social-settings-field" key={field.key} htmlFor={`admin-social-${field.key}`}>
-              <span>{field.label}</span>
-              <input
-                id={`admin-social-${field.key}`}
-                type="text"
-                dir="ltr"
-                value={links[field.key]}
-                placeholder={field.placeholder}
-                onChange={(event) => {
-                  setLinks((current) => ({ ...current, [field.key]: event.target.value }));
-                  onNotice("");
-                }}
-              />
-            </label>
-          ))}
-        </div>
-      </section>
-      <div className="site-settings-submit">
-        <p>الإعدادات محلية لهذا المتصفح فقط.</p>
-        <button className="admin-button admin-button-primary" type="submit">حفظ الروابط</button>
+    <div className="admin-page">
+      <div className="admin-page-heading">
+        <div><span className="admin-kicker">إعدادات التذييل</span><h1>التحكم في مواقع التواصل الاجتماعي</h1><p>تُحفظ الروابط المشتركة على الخادم وتظهر لجميع الزوار والأجهزة.</p></div>
       </div>
-    </form>
+      {error && <p className="admin-alert" role="alert">{error}</p>}
+      {notice && <p className="admin-success" role="status">{notice}</p>}
+      <form className="site-settings-form" onSubmit={save}>
+        <section className="admin-panel-card site-settings-card">
+          <div className="admin-card-heading"><div><h2>روابط التواصل</h2><p>أدخل الرابط أو الرقم. الحقول الفارغة لا تظهر في الفوتر.</p></div></div>
+          <div className="social-settings-grid">
+            {fields.map((field) => (
+              <label className="site-settings-field social-settings-field" key={field.key} htmlFor={`admin-social-${field.key}`}>
+                <span>{field.label}</span>
+                <input
+                  id={`admin-social-${field.key}`}
+                  type="text"
+                  dir="ltr"
+                  value={links[field.key]}
+                  placeholder={field.placeholder}
+                  disabled={!ready || pending}
+                  onChange={(event) => {
+                    setLinks((current) => ({ ...current, [field.key]: event.target.value }));
+                    setNotice("");
+                    setError("");
+                  }}
+                />
+              </label>
+            ))}
+          </div>
+          <label className="site-settings-field" htmlFor="social-admin-email">
+            <span>بريد المدير لتأكيد الحفظ</span>
+            <input id="social-admin-email" type="email" dir="ltr" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} disabled={pending} />
+          </label>
+          <label className="site-settings-field" htmlFor="social-admin-password">
+            <span>كلمة مرور المدير</span>
+            <input id="social-admin-password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} disabled={pending} />
+          </label>
+        </section>
+        <div className="site-settings-submit">
+          <p>تظهر الروابط المحفوظة لجميع الزوار بعد تحديث الصفحة.</p>
+          <button className="admin-button admin-button-primary" type="submit" disabled={!ready || pending}>
+            {pending ? "جارٍ الحفظ..." : "حفظ الروابط"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

@@ -43,10 +43,31 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
       if (key === LOCAL_DB_KEYS.preferences) loadPreferences();
     });
     const onSettingsUpdated = () => loadPreferences();
+    let active = true;
+    const loadSocialLinks = async () => {
+      try {
+        const response = await fetch("/api/social-links", { cache: "no-store" });
+        if (!response.ok) throw new Error(`Social links request failed with status ${response.status}.`);
+        const socialLinks: unknown = await response.json();
+        if (!socialLinks || typeof socialLinks !== "object" || Array.isArray(socialLinks)) {
+          throw new Error("The social links response is invalid.");
+        }
+        if (active) {
+          setPreferences((current) => parseSitePreferences({ ...current, social_links: socialLinks }));
+        }
+      } catch (error) {
+        console.error("Could not load shared social links.", error);
+      }
+    };
+    void loadSocialLinks();
+    const onSocialLinksUpdated = () => void loadSocialLinks();
     window.addEventListener("site-preferences-updated", onSettingsUpdated);
+    window.addEventListener("serviceai-social-links-updated", onSocialLinksUpdated);
     return () => {
+      active = false;
       unsubscribe();
       window.removeEventListener("site-preferences-updated", onSettingsUpdated);
+      window.removeEventListener("serviceai-social-links-updated", onSocialLinksUpdated);
     };
   }, []);
 
