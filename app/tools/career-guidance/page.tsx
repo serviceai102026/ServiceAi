@@ -14,6 +14,7 @@ export default function CareerGuidancePage() {
     <section className="page-hero"><div className="container page-hero-inner"><div><span className="eyebrow"><span className="eyebrow-dot" />تخطيط مهني عملي</span><h1>خطوتك المهنية<br /><span className="text-gradient">تبدأ بهدف واضح.</span></h1><p>حوّل هدفك المهني إلى خطوات قابلة للتنفيذ، بإرشادات عامة تُنشأ داخل متصفحك.</p></div><div className="page-hero-art tool-hero-art" aria-hidden="true"><div className="tool-hero-sheet"><span /><span /><span /><b>خطة<br />مهنية</b></div></div></div></section>
     <ToolPageAd position="top" />
     <CareerGuidanceTool />
+    <ToolPageAd position="middle" />
     <ToolPageAd position="bottom" />
   </main><SiteFooter /></>;
 }

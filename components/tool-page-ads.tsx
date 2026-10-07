@@ -1,24 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AdSlot } from "@/components/AdSlot";
-import { ADS_CONFIG, readAdsConfigOverride, type AdsConfig } from "@/lib/ads-config";
+import { AdSlot } from "@/components/ads/AdSlot";
+import { useSitePreferences } from "@/components/site-preferences-provider";
 
-export function ToolPageAd({ position }: { position: "top" | "bottom" }) {
-  const [settings, setSettings] = useState<AdsConfig>(() => ADS_CONFIG);
-
-  useEffect(() => {
-    const loadSettings = () => setSettings(readAdsConfigOverride());
-    loadSettings();
-    window.addEventListener("storage", loadSettings);
-    window.addEventListener("serviceai-ads-config-updated", loadSettings);
-    return () => {
-      window.removeEventListener("storage", loadSettings);
-      window.removeEventListener("serviceai-ads-config-updated", loadSettings);
-    };
-  }, []);
-
-  const placement = settings[position];
-  if (!placement.enabled || !placement.code.trim()) return null;
-  return <AdSlot code={placement.code} />;
+export function ToolPageAd({ position }: { position: "top" | "middle" | "bottom" }) {
+  const { adsConfig, adsConfigReady } = useSitePreferences();
+  if (!adsConfigReady) return null;
+  const placement = adsConfig[position];
+  if (!placement.enabled) return null;
+  return <AdSlot position={position} />;
 }

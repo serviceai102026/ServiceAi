@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { CoverLetterGenerator } from "@/components/cover-letter-generator";
-import { AdSlot } from "@/components/ad-slot";
 import { SiteFooter, SiteHeader } from "@/components/site";
 import { ToolPageAd } from "@/components/tool-page-ads";
 
@@ -66,12 +65,11 @@ export default function CoverLetterGeneratorPage() {
       </section>
 
       <ToolPageAd position="top" />
-      <AdSlot id="cover-letter-intro" className="container cover-page-ad cover-intro-ad" description="موضع اختياري بعد مقدمة الأداة." />
       <section className="section cover-tool-section"><div className="container">
         <div className="cover-section-intro"><div><span className="eyebrow">خصّص رسالتك</span><h2>من معلوماتك إلى <span className="text-gradient">مسودة جاهزة للمراجعة.</span></h2><p>قدّم المعلومات التي تريد إبرازها؛ لا نضيف إلى الرسالة خبرات أو مهارات لم تدخلها.</p></div><span className="cover-lang-mark">5 لغات <b>·</b> PDF وDOCX</span></div>
         <CoverLetterGenerator />
       </div></section>
-      <AdSlot id="cover-letter-results" className="container cover-page-ad cover-before-guide-ad" description="موضع اختياري بين الأداة والدليل." />
+      <ToolPageAd position="middle" />
 
       <section className="cover-seo-section"><div className="container">
         <div className="section-heading centered"><span className="eyebrow">دليل كتابة رسائل التقديم</span><h2>قدّم قصتك المهنية <span className="text-gradient">بوضوح وصدق.</span></h2><p>رسالة التقديم مساحة لشرح اهتمامك بفرصة محددة وربط خلفيتك بمتطلباتها. استخدم هذا الدليل لتخصيص الرسالة ومراجعتها قبل الإرسال.</p></div>
@@ -85,11 +83,9 @@ export default function CoverLetterGeneratorPage() {
           <article className="cover-guide-card"><span>07</span><h2>أمثلة ونصائح عامة</h2><p>بدلًا من كتابة «أنا مجتهد ومتحمس»، اذكر ما فعلته فعلًا: «أدرت حملات بريدية أسبوعية» أو «نسّقت إطلاق منتج مع ثلاثة فرق» إذا كان ذلك صحيحًا. أضف نتيجة رقمية فقط عندما تكون موثوقة، واختصر الرسالة لتسهيل قراءتها.</p></article>
           <article className="cover-guide-card cover-guide-tip"><span>✓</span><h2>استخدم المولد كبداية، لا كنص نهائي</h2><p>راجع كل جملة وتأكد من دقتها ومن ملاءمة نبرتها للجهة. أزل أي تفاصيل لا تنطبق عليك، واطلب مراجعة شخص تثق به عند الحاجة.</p></article>
         </div>
-        <AdSlot id="cover-letter-inline" className="cover-inline-ad" description="موضع اختياري داخل المحتوى التعليمي." />
+        <ToolPageAd position="bottom" />
         <section className="cover-faq-section"><div className="section-heading"><span className="eyebrow">أسئلة شائعة</span><h2>إجابات لرسالة تقديم <span className="text-gradient">أوضح.</span></h2></div><div className="faq-list">{faqs.map(([question, answer]) => <details className="faq-item" key={question}><summary>{question}<span className="faq-plus" aria-hidden="true" /></summary><p>{answer}</p></details>)}</div></section>
       </div></section>
-      <AdSlot id="cover-letter-bottom" className="container cover-page-ad cover-bottom-ad" description="موضع اختياري أسفل الصفحة." />
-      <ToolPageAd position="bottom" />
     </main>
     <SiteFooter />
   </>;

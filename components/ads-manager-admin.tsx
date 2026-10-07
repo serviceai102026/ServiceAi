@@ -1,8 +1,10 @@
-import { ADS_CONFIG } from "@/config/ads";
+import { ADS_CONFIG as SITE_ADS_CONFIG } from "@/config/ads";
 import { AdsConfigEditor } from "@/components/ads-config-editor";
 import { SiteSettingsForm } from "@/components/site-settings-form";
+import { ADS_CONFIG } from "@/lib/ads-config";
 
 export function AdsManagerAdmin() {
+  const enabledPlacements = Object.values(ADS_CONFIG).filter(({ enabled }) => enabled).length;
   return (
     <div className="admin-page ads-manager-page">
       <div className="admin-page-heading">
@@ -11,8 +13,8 @@ export function AdsManagerAdmin() {
           <h1>إدارة إعلانات Google AdSense</h1>
           <p>عدّل معرّف الناشر ومواضع الإعلانات؛ تُحفظ الإعدادات في هذا المتصفح.</p>
         </div>
-        <span className={`admin-status ${ADS_CONFIG.enabled ? "status-published" : "status-draft"}`}>
-          {ADS_CONFIG.enabled ? "الإعلانات مفعّلة" : "الإعلانات متوقفة"}
+        <span className={`admin-status ${SITE_ADS_CONFIG.enabled && enabledPlacements ? "status-published" : "status-draft"}`}>
+          {SITE_ADS_CONFIG.enabled ? `${enabledPlacements} مواضع مفعّلة` : "الإعلانات متوقفة"}
         </span>
       </div>
       <SiteSettingsForm />

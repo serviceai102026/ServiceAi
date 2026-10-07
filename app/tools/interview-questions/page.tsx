@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { InterviewQuestionGenerator } from "@/components/interview-question-generator";
-import { AdSlot } from "@/components/ad-slot";
 import { SiteFooter, SiteHeader } from "@/components/site";
 import { ToolPageAd } from "@/components/tool-page-ads";
 
@@ -65,12 +64,11 @@ export default function InterviewQuestionsPage() {
         </div>
       </section>
       <ToolPageAd position="top" />
-      <AdSlot id="interview-questions-intro" className="container interview-page-ad interview-intro-ad" description="موضع هادئ بعد مقدمة الأداة." />
       <section className="section interview-tool-section"><div className="container">
         <div className="interview-section-intro"><div><span className="eyebrow">تدرّب بخطة واضحة</span><h2>أسئلة وإجابات <span className="text-gradient">للمقابلة القادمة.</span></h2><p>اختر نوع المقابلة واللغة، وأضف الوصف الوظيفي لربط التدريب بمتطلبات الإعلان.</p></div><span className="interview-free-mark">5–20 سؤالًا <b>·</b> 5 لغات</span></div>
         <InterviewQuestionGenerator />
       </div></section>
-      <AdSlot id="interview-questions-results" className="container interview-page-ad interview-results-ad" description="موضع اختياري بعد نتائج الأسئلة." />
+      <ToolPageAd position="middle" />
       <section className="interview-seo-section"><div className="container">
         <div className="section-heading centered"><span className="eyebrow">دليل الاستعداد للمقابلات</span><h2>ادخل المقابلة <span className="text-gradient">مستعدًا وواثقًا.</span></h2><p>التحضير الجيد لا يعني حفظ إجابات جاهزة؛ بل فهم الدور والاستعداد لشرح خبرتك بأمثلة دقيقة ومناسبة.</p></div>
         <div className="interview-guide-grid">
@@ -83,11 +81,9 @@ export default function InterviewQuestionsPage() {
           <article className="interview-guide-card"><span>07</span><h2>ماذا تسأل مسؤول التوظيف؟</h2><p>يمكنك السؤال عن معايير النجاح في الأشهر الأولى، أو أولويات الفريق وتحدياته الحالية، أو كيفية التعاون والتعلم في الدور. اختر أسئلة لم تُجب عنها المقابلة بعد وتساعدك على فهم الفرصة.</p></article>
           <article className="interview-guide-card interview-guide-tip"><span>✓</span><h2>راجع الإجابات بصوتك أنت</h2><p>استخدم الإجابات المقترحة كهيكل فقط. استبدل الأقواس بتفاصيل صحيحة من تجربتك، ولا تحفظ صياغة حرفية قد لا تبدو طبيعية.</p></article>
         </div>
-        <AdSlot id="interview-questions-inline" className="interview-inline-ad" description="موضع اختياري داخل الدليل التعليمي." />
+        <ToolPageAd position="bottom" />
         <section className="interview-faq-section"><div className="section-heading"><span className="eyebrow">أسئلة شائعة</span><h2>استفسارات حول <span className="text-gradient">التدريب للمقابلات.</span></h2></div><div className="faq-list">{faqs.map(([question, answer]) => <details className="faq-item" key={question}><summary>{question}<span className="faq-plus" aria-hidden="true" /></summary><p>{answer}</p></details>)}</div></section>
       </div></section>
-      <AdSlot id="interview-questions-bottom" className="container interview-page-ad interview-bottom-ad" description="موضع اختياري أسفل الصفحة." />
-      <ToolPageAd position="bottom" />
     </main>
     <SiteFooter />
   </>;

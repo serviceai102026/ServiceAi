@@ -7,10 +7,10 @@ export const ADS_CONFIG = {
 
 export function shouldShowAdsOnPathname(pathname: string) {
   const normalizedPath = pathname.toLowerCase();
-  const isBlogPage = normalizedPath === "/blog" || normalizedPath.startsWith("/blog/");
+  const excludedPaths = ["/", "/about", "/contact", "/privacy", "/terms"];
+  const isExcludedPath = excludedPaths.includes(normalizedPath)
+    || normalizedPath.startsWith("/admin/")
+    || normalizedPath === "/admin";
 
-  return ADS_CONFIG.enabled
-    && !ADS_CONFIG.hideOnPages.some((page) => normalizedPath.includes(page.toLowerCase()))
-    && (normalizedPath !== "/" || ADS_CONFIG.showOnHomepage)
-    && (!isBlogPage || ADS_CONFIG.showOnBlog);
+  return ADS_CONFIG.enabled && !isExcludedPath;
 }

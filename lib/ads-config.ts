@@ -1,15 +1,16 @@
 export const ADS_CONFIG = {
   top: { enabled: true, code: "" },
+  middle: { enabled: true, code: "" },
   bottom: { enabled: true, code: "" },
   blog_top: { enabled: true, code: "" },
   blog_middle: { enabled: true, code: "" },
   blog_end: { enabled: true, code: "" },
-} satisfies AdsConfig;
+} as const satisfies AdsConfig;
 
 export const ADS_CONFIG_STORAGE_KEY = "serviceai_ads_config";
 
-export type AdsPlacement = keyof typeof ADS_CONFIG;
-export type AdsConfig = Record<"top" | "bottom" | "blog_top" | "blog_middle" | "blog_end", {
+export type AdsPlacement = "top" | "middle" | "bottom" | "blog_top" | "blog_middle" | "blog_end";
+export type AdsConfig = Record<AdsPlacement, {
   enabled: boolean;
   code: string;
 }>;
@@ -41,15 +42,15 @@ export function readAdsConfigOverride(): AdsConfig {
 }
 
 export function exportAdsConfigModule(settings: AdsConfig): string {
-  return `export const ADS_CONFIG = ${JSON.stringify(settings, null, 2)} satisfies AdsConfig;
-
-export const ADS_CONFIG_STORAGE_KEY = "serviceai_ads_config";
-
-export type AdsPlacement = keyof typeof ADS_CONFIG;
-export type AdsConfig = Record<"top" | "bottom" | "blog_top" | "blog_middle" | "blog_end", {
+  return `export type AdsPlacement = "top" | "middle" | "bottom" | "blog_top" | "blog_middle" | "blog_end";
+export type AdsConfig = Record<AdsPlacement, {
   enabled: boolean;
   code: string;
 }>;
+
+export const ADS_CONFIG = ${JSON.stringify(settings, null, 2)} as const satisfies AdsConfig;
+
+export const ADS_CONFIG_STORAGE_KEY = "serviceai_ads_config";
 
 export function parseAdsConfig(value: unknown): AdsConfig {
   const parsed = value && typeof value === "object" ? value as Record<string, unknown> : {};

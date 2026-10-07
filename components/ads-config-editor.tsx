@@ -5,6 +5,7 @@ import { ADS_CONFIG, ADS_CONFIG_STORAGE_KEY, exportAdsConfigModule, parseAdsConf
 
 const placements: { id: AdsPlacement; title: string; description: string }[] = [
   { id: "top", title: "إعلانات الأدوات — أعلى الصفحة", description: "تظهر بعد عنوان كل أداة." },
+  { id: "middle", title: "إعلانات الأدوات — وسط الصفحة", description: "تظهر بعد أداة التحويل أو في منتصف المحتوى." },
   { id: "bottom", title: "إعلانات الأدوات — أسفل الصفحة", description: "تظهر قبل تذييل كل صفحة أداة." },
   { id: "blog_top", title: "أعلى المقال", description: "تظهر بعد الفقرة الأولى." },
   { id: "blog_middle", title: "وسط المقال", description: "تظهر بعد منتصف فقرات المقال." },
@@ -38,6 +39,21 @@ export function AdsConfigEditor() {
     event.preventDefault();
     setError("");
     setNotice("");
+    const placementGroups: AdsPlacement[][] = [
+      ["top", "middle", "bottom"],
+      ["blog_top", "blog_middle", "blog_end"],
+    ];
+    const duplicateCodes = placementGroups.some((group) => {
+      const codes = group
+        .filter((id) => settings[id].enabled)
+        .map((id) => settings[id].code.trim())
+        .filter(Boolean);
+      return new Set(codes).size !== codes.length;
+    });
+    if (duplicateCodes) {
+      setError("استخدم كودًا مختلفًا لكل مساحة مفعّلة حتى لا يتكرر الإعلان داخل الصفحة.");
+      return;
+    }
     try {
       window.localStorage.setItem(ADS_CONFIG_STORAGE_KEY, JSON.stringify(settings));
       window.dispatchEvent(new Event("serviceai-ads-config-updated"));
@@ -66,6 +82,7 @@ export function AdsConfigEditor() {
       [id]: { ...current[id], ...update },
     }));
     setNotice("");
+    setError("");
   }
 
   return (

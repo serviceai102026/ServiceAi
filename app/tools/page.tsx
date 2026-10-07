@@ -3,7 +3,6 @@ import Link from "next/link";
 import { SiteFooter, SiteHeader } from "@/components/site";
 import { sanitizeArticleHtml } from "@/lib/content";
 import { getPage } from "@/lib/pages";
-import { ToolPageAd } from "@/components/tool-page-ads";
 
 export const dynamic = "force-dynamic";
 
@@ -111,7 +110,6 @@ export default async function ToolsPage() {
           </div>
         </div>
       </section>
-      <ToolPageAd position="top" />
       <section className="section tools-page-section">
         <div className="container">
           <div className="legal-content" dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(page?.content ?? "") }} />
@@ -138,7 +136,6 @@ export default async function ToolsPage() {
           <span className="cta-decoration" aria-hidden="true">✦</span>
         </div>
       </section>
-      <ToolPageAd position="bottom" />
     </main>
     <SiteFooter />
   </>;

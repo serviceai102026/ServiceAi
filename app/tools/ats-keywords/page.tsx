@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { AtsKeywordGenerator } from "@/components/ats-keyword-generator";
-import { AdSlot } from "@/components/ad-slot";
 import { SiteFooter, SiteHeader } from "@/components/site";
 import { ToolPageAd } from "@/components/tool-page-ads";
 
@@ -68,13 +67,12 @@ export default function AtsKeywordsPage() {
       </section>
 
       <ToolPageAd position="top" />
-      <AdSlot id="ats-keywords-intro" className="container ats-page-ad ats-intro-ad" description="موضع غير مزعج أسفل مقدمة الأداة." />
       <section className="section ats-tool-section"><div className="container">
         <div className="ats-tool-intro"><div><span className="eyebrow">حلل الإعلان وقارن سيرتك</span><h2>حوّل وصف الوظيفة إلى <span className="text-gradient">خطوات واضحة.</span></h2><p>الصق الإعلان للبدء. تحليل السيرة الذاتية اختياري، وتتم معالجة الملفات والنصوص محليًا دون حفظها.</p></div><span className="ats-supported-files">PDF <span>·</span> DOCX <small>اختياري</small></span></div>
         <AtsKeywordGenerator />
       </div></section>
 
-      <AdSlot id="ats-keywords-results" className="container ats-page-ad ats-results-ad" description="موضع اختياري بعد نتائج التحليل وقبل الدليل." />
+      <ToolPageAd position="middle" />
 
       <section className="ats-seo-section"><div className="container">
         <div className="section-heading centered"><span className="eyebrow">دليل الكلمات المفتاحية وATS</span><h2>اجعل خبرتك <span className="text-gradient">أوضح في سيرتك.</span></h2><p>استخدم الكلمات الواردة في الإعلان لفهم متطلباته وتقديم خبرتك ذات الصلة بوضوح وصدق، لا لحشو السيرة بمصطلحات لا تمثلك.</p></div>
@@ -88,11 +86,9 @@ export default function AtsKeywordsPage() {
           <article className="ats-guide-card ats-guide-warning"><span>07</span><h2>تجنب Keyword Stuffing</h2><p>تكرار كلمات بلا سياق يجعل السيرة صعبة القراءة ويقلل الثقة. اكتب جملًا طبيعية تشرح مساهمتك وأدواتك ونتائجك، واستعمل المصطلح عند الحاجة فقط. لا تخفِ كلمات أو تستخدم نصًا غير مرئي.</p></article>
           <article className="ats-guide-card ats-guide-tip"><span>08</span><h2>كيف تحسن Resume Match؟</h2><p>ابدأ بمقارنة المؤهلات المطلوبة مع سيرتك، ثم حسّن العناوين والعبارات لتكون محددة ومفهومة. اربط المهارة بمثال حقيقي، واستخدم تنسيقًا بسيطًا وعناوين مألوفة، وأعد قراءة النسخة النهائية بنفسك.</p></article>
         </div>
-        <AdSlot id="ats-keywords-inline" className="ats-inline-ad" description="موضع اختياري داخل الدليل التعليمي." />
+        <ToolPageAd position="bottom" />
         <section className="ats-faq-section"><div className="section-heading"><span className="eyebrow">أسئلة شائعة</span><h2>استفسارات حول <span className="text-gradient">الكلمات المفتاحية.</span></h2></div><div className="faq-list">{faqs.map(([question, answer]) => <details className="faq-item" key={question}><summary>{question}<span className="faq-plus" aria-hidden="true" /></summary><p>{answer}</p></details>)}</div></section>
       </div></section>
-      <AdSlot id="ats-keywords-bottom" className="container ats-page-ad ats-bottom-ad" description="موضع اختياري أسفل الصفحة." />
-      <ToolPageAd position="bottom" />
     </main>
     <SiteFooter />
   </>;
