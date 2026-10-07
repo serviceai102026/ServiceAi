@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { FloatingWhatsApp } from "@/components/floating-whatsapp";
 import { ADS_CONFIG, shouldShowAdsOnPathname } from "@/config/ads";
 import { ADSENSE_SETTINGS_KEY, createDefaultAdsenseSettings, readAdsenseSettings, type AdsenseSettings } from "@/lib/adsense-settings";
 import { createDefaultSitePreferences, parseSitePreferences, type SitePreferences } from "@/lib/site-preferences";
@@ -171,7 +170,6 @@ export function SitePreferencesProvider({ children }: { children: React.ReactNod
       adsenseReady: shouldLoadAds && readyPublisherId === adsenseSettings.publisherId,
     }}>
       {children}
-      <FloatingWhatsApp />
     </PreferencesContext.Provider>
   );
 }

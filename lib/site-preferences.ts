@@ -26,6 +26,7 @@ export type SocialPreferences = {
   whatsapp: string;
   instagram: string;
   facebook: string;
+  tiktok: string;
   x: string;
   linkedin: string;
   youtube: string;
@@ -149,7 +150,7 @@ export function createDefaultSitePreferences(): SitePreferences {
   return {
     adsenseClient: "",
     adSlots: Object.fromEntries(AD_PLACEMENTS.map(({ id }) => [id, { enabled: false, slotId: "" }])) as Record<AdPlacementId, AdSlotPreference>,
-    socialLinks: { whatsapp: "", instagram: "", facebook: "", x: "", linkedin: "", youtube: "" },
+    socialLinks: { whatsapp: "", instagram: "", facebook: "", tiktok: "", x: "", linkedin: "", youtube: "" },
     branding: { ...DEFAULT_SITE_BRANDING },
     homeSlider: DEFAULT_HOME_SLIDES.map((slide) => ({ ...slide })),
   };

@@ -238,10 +238,10 @@ h1, h2, h3, p { margin-block-start: 0; }
 .footer-brand-col > p { max-width: 260px; margin-block-end: 13px; color: #8794a6; font-size: 10px; line-height: 1.9; }
 .footer-email { color: #57718d; font-size: 10px; }
 .footer-email span { margin-inline-start: 4px; color: var(--blue); }
-.floating-whatsapp { position: fixed; right: 25px; bottom: 25px; z-index: 9999; display: flex; width: 48px; height: 48px; align-items: center; justify-content: center; border-radius: 50%; background: #25D366; color: #fff; box-shadow: 0 10px 15px -3px rgb(0 0 0 / .1), 0 4px 6px -4px rgb(0 0 0 / .1); transition: background-color .3s, transform .3s; }
-.floating-whatsapp:hover { transform: scale(1.1); background: #128C7E; }
-.floating-whatsapp:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
-.floating-whatsapp svg { width: 24px; height: 24px; }
+.footer-social-links { display: flex; flex-wrap: wrap; gap: 8px; margin-block-start: 17px; }
+.footer-social-links a { display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid #e3eaf2; border-radius: 50%; background: #fff; color: #6b829d; transition: border-color .2s ease, background .2s ease, color .2s ease, transform .2s ease; }
+.footer-social-links a:hover { transform: translateY(-2px); border-color: #c9daef; background: #f0f6ff; color: var(--blue); }
+.footer-social-links a:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
 .social-x-mark { display: inline-grid; width: 17px; height: 17px; place-items: center; border: 1.5px solid currentColor; border-radius: 50%; font-size: 10px; font-weight: 700; }
 .adsense-slot { display: block; min-height: 100px; max-width: 100%; overflow: hidden; }
 .adsense-slot .adsbygoogle { min-height: 90px; }

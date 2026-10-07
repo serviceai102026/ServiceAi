@@ -1,5 +1,5 @@
 import { get, LOCAL_DB_KEYS } from "@/lib/localDB";
-import seedBlogs from "@/data/blogs.json";
+import seedBlogs from "@/data/blogs";
 
 export type Category = {
   id: string;

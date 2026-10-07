@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArticleCard, SiteFooter, SiteHeader } from "@/components/site";
 import { LocalArticlePage } from "@/components/local-blog";
-import blogs from "@/data/blogs.json";
+import blogs from "@/data/blogs";
 import { sanitizeArticleHtml } from "@/lib/content";
 import type { ArticleCardData } from "@/lib/data";
 
