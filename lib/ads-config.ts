@@ -8,7 +8,7 @@ export type AdsConfig = Record<AdsPlacement, {
 export const ADS_CONFIG = {
   "top": {
     "enabled": true,
-    "code": "<script data-cfasync=\"false\" src=\"https://afders.org/1/9cc26caa2e6dbd2de38ab427444482b0\"></script>"
+    "code": "https://arwf.org/4/682ab5ab42cd375b9ea7e95acefdd41f"
   },
   "middle": {
     "enabled": true,
