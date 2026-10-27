@@ -8,26 +8,26 @@ export type AdsConfig = Record<AdsPlacement, {
 export const ADS_CONFIG = {
   "top": {
     "enabled": true,
-    "code": "<div style=\"text-align:center; margin:20px 0;\">\n  <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXX\" crossorigin=\"anonymous\"></script>\n  <ins class=\"adsbygoogle\"\n       style=\"display:block\"\n       data-ad-client=\"ca-pub-XXXXXXXXXXXXXX\"\n       data-ad-slot=\"1234567890\"\n       data-ad-format=\"auto\"\n       data-full-width-responsive=\"true\"></ins>\n  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>\n</div>"
+    "code": "<script data-cfasync=\"false\" src=\"https://afders.org/1/9cc26caa2e6dbd2de38ab427444482b0\"></script>"
   },
   "middle": {
     "enabled": true,
-    "code": "<div style=\"text-align:center; margin:20px 0;\">\n  <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXX\" crossorigin=\"anonymous\"></script>\n  <ins class=\"adsbygoogle\"\n       style=\"display:block\"\n       data-ad-client=\"ca-pub-XXXXXXXXXXXXXX\"\n       data-ad-slot=\"1234567890\"\n       data-ad-format=\"auto\"\n       data-full-width-responsive=\"true\"></ins>\n  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>\n</div>"
+    "code": "<script async=\"async\" data-cfasync=\"false\" src=\"https://bicea.org/21/cf945101dc8a2c6c248713fd4f13fe04\"></script>\n<div id=\"container-cf945101dc8a2c6c248713fd4f13fe04\"></div>"
   },
   "bottom": {
     "enabled": true,
-    "code": "<div style=\"text-align:center; margin:20px 0;\">\n  <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXX\" crossorigin=\"anonymous\"></script>\n  <ins class=\"adsbygoogle\"\n       style=\"display:block\"\n       data-ad-client=\"ca-pub-XXXXXXXXXXXXXX\"\n       data-ad-slot=\"1234567890\"\n       data-ad-format=\"auto\"\n       data-full-width-responsive=\"true\"></ins>\n  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>\n</div>"
+    "code": "<script data-cfasync=\"false\" src=\"https://bicea.org/14/2d7b3de17951ff4f4dcf8a367dccabe5\"></script>"
   },
   "blog_top": {
     "enabled": true,
-    "code": "<div style=\"text-align:center; margin:20px 0;\">\n  <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXX\" crossorigin=\"anonymous\"></script>\n  <ins class=\"adsbygoogle\"\n       style=\"display:block\"\n       data-ad-client=\"ca-pub-XXXXXXXXXXXXXX\"\n       data-ad-slot=\"1234567890\"\n       data-ad-format=\"auto\"\n       data-full-width-responsive=\"true\"></ins>\n  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>\n</div>"
+    "code": "<script data-cfasync=\"false\" src=\"https://bicea.org/14/2d7b3de17951ff4f4dcf8a367dccabe5\"></script>"
   },
   "blog_middle": {
     "enabled": true,
-    "code": "<div style=\"text-align:center; margin:20px 0;\">\n  <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXX\" crossorigin=\"anonymous\"></script>\n  <ins class=\"adsbygoogle\"\n       style=\"display:block\"\n       data-ad-client=\"ca-pub-XXXXXXXXXXXXXX\"\n       data-ad-slot=\"1234567890\"\n       data-ad-format=\"auto\"\n       data-full-width-responsive=\"true\"></ins>\n  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>\n</div>"
+    "code": "<script data-cfasync=\"false\" src=\"https://bicea.org/14/2d7b3de17951ff4f4dcf8a367dccabe5\"></script>"
   },
   "blog_end": {
     "enabled": true,
-    "code": "<div style=\"text-align:center; margin:20px 0;\">\n  <script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXX\" crossorigin=\"anonymous\"></script>\n  <ins class=\"adsbygoogle\"\n       style=\"display:block\"\n       data-ad-client=\"ca-pub-XXXXXXXXXXXXXX\"\n       data-ad-slot=\"1234567890\"\n       data-ad-format=\"auto\"\n       data-full-width-responsive=\"true\"></ins>\n  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>\n</div>"
+    "code": "<script data-cfasync=\"false\" src=\"https://bicea.org/14/2d7b3de17951ff4f4dcf8a367dccabe5\"></script>"
   }
 } as const satisfies AdsConfig;
